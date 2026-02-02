@@ -1,0 +1,29 @@
+# Streamlit secrets (IMPORTANT - NEVER COMMIT!)
+.streamlit/secrets.toml
+
+# Python
+venv/
+env/
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data files (user uploads)
+*.csv
+!sample_transactions.csv
+
+# Logs
+*.log
