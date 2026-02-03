@@ -1207,9 +1207,16 @@ with tab2:
             fig.update_traces(
                 textposition='inside',
                 textinfo='percent+label',
-                hovertemplate='<b>%{label}</b><br>Amount: $%{value:,.2f}<br>Percentage: %{percent}<extra></extra>'
+                hovertemplate='<b>%{label}</b><br>Amount: $%{value:,.2f}<br>%{percent}<extra></extra>'
             )
-            fig.update_layout(height=400, margin=dict(t=40, b=20, l=20, r=20))
+            fig.update_layout(
+                height=400,
+                margin=dict(t=40, b=20, l=20, r=20),
+                paper_bgcolor='white',
+                plot_bgcolor='white',
+                font=dict(color='black', size=12),
+                title_font=dict(color='black', size=16, family='Inter')
+            )
             
             st.plotly_chart(fig, use_container_width=True)
         
@@ -1324,7 +1331,36 @@ with tab3:
                     color_discrete_map={'Historical': '#003D82', 'Forecast': '#00C389'}
                 )
                 
-                fig.update_layout(height=400, margin=dict(t=40, b=20, l=20, r=20))
+                fig.update_traces(
+                    hovertemplate='<b>%{fullData.name}</b><br>Date: %{x|%b %d, %Y}<br>Amount: $%{y:,.2f}<extra></extra>'
+                )
+                
+                fig.update_layout(
+                    height=400,
+                    margin=dict(t=40, b=20, l=20, r=20),
+                    paper_bgcolor='white',
+                    plot_bgcolor='white',
+                    font=dict(color='black', size=12),
+                    title_font=dict(color='black', size=16, family='Inter'),
+                    xaxis=dict(
+                        showgrid=True,
+                        gridcolor='#E5E5E5',
+                        linecolor='black',
+                        title_font=dict(color='black')
+                    ),
+                    yaxis=dict(
+                        showgrid=True,
+                        gridcolor='#E5E5E5',
+                        linecolor='black',
+                        title_font=dict(color='black')
+                    ),
+                    legend=dict(
+                        font=dict(color='black'),
+                        bgcolor='white',
+                        bordercolor='black',
+                        borderwidth=1
+                    )
+                )
                 
                 st.plotly_chart(fig, use_container_width=True)
         else:
@@ -1367,7 +1403,8 @@ with tab4:
                         y=normal['amount'],
                         mode='markers',
                         name='Normal',
-                        marker=dict(color='#003D82', size=8)
+                        marker=dict(color='#003D82', size=8),
+                        hovertemplate='<b>Normal Transaction</b><br>Date: %{x|%b %d, %Y}<br>Amount: $%{y:,.2f}<extra></extra>'
                     ))
                     
                     fig.add_trace(go.Scatter(
@@ -1375,7 +1412,8 @@ with tab4:
                         y=anomalies['amount'],
                         mode='markers',
                         name='Unusual',
-                        marker=dict(color='#FF5630', size=12, symbol='x')
+                        marker=dict(color='#FF5630', size=12, symbol='x'),
+                        hovertemplate='<b>Unusual Transaction</b><br>Date: %{x|%b %d, %Y}<br>Amount: $%{y:,.2f}<extra></extra>'
                     ))
                     
                     fig.update_layout(
@@ -1383,7 +1421,29 @@ with tab4:
                         xaxis_title='Date',
                         yaxis_title='Amount ($)',
                         height=400,
-                        margin=dict(t=40, b=20, l=20, r=20)
+                        margin=dict(t=40, b=20, l=20, r=20),
+                        paper_bgcolor='white',
+                        plot_bgcolor='white',
+                        font=dict(color='black', size=12),
+                        title_font=dict(color='black', size=16, family='Inter'),
+                        xaxis=dict(
+                            showgrid=True,
+                            gridcolor='#E5E5E5',
+                            linecolor='black',
+                            title_font=dict(color='black')
+                        ),
+                        yaxis=dict(
+                            showgrid=True,
+                            gridcolor='#E5E5E5',
+                            linecolor='black',
+                            title_font=dict(color='black')
+                        ),
+                        legend=dict(
+                            font=dict(color='black'),
+                            bgcolor='white',
+                            bordercolor='black',
+                            borderwidth=1
+                        )
                     )
                     
                     st.plotly_chart(fig, use_container_width=True)
