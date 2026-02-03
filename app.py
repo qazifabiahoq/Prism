@@ -845,60 +845,17 @@ with tab1:
     
     st.markdown("---")
     
-    upload_method = st.radio(
-        "Choose upload method:",
-        ["Spreadsheet (CSV)", "Photo of Receipt"],
-        horizontal=True
-    )
-    
-    st.markdown("---")
-    
     uploaded_data = None
     
-    if upload_method == "Spreadsheet (CSV)":
-        uploaded_file = st.file_uploader(
-            "Upload your transaction history (CSV)",
-            type=['csv'],
-            help="CSV file with Date, Amount, and Description columns"
-        )
-        
-        if uploaded_file:
-            uploaded_data = pd.read_csv(uploaded_file)
-            st.success("File uploaded successfully")
+    uploaded_file = st.file_uploader(
+        "Upload your transaction history (CSV)",
+        type=['csv'],
+        help="CSV file with Date, Amount, and Description columns"
+    )
     
-    else:
-        if HAS_OCR:
-            uploaded_image = st.file_uploader(
-                "Upload a photo of your receipt",
-                type=['png', 'jpg', 'jpeg'],
-                help="Take a clear photo of your receipt - we'll extract the transactions"
-            )
-            
-            if uploaded_image:
-                with st.spinner("Reading your receipt..."):
-                    uploaded_data = FinancialIntelligence.extract_from_image(uploaded_image)
-                    
-                    if uploaded_data is not None:
-                        st.success("Receipt processed successfully!")
-                    else:
-                        st.warning("""
-                        **Couldn't read this receipt**
-                        
-                        For best results:
-                        - Make sure the photo is clear and well-lit
-                        - Receipt should be flat (not crumpled)
-                        - All text should be visible
-                        
-                        Or try uploading a spreadsheet (CSV) instead - it's faster and more reliable!
-                        """)
-        else:
-            st.info("""
-            **Photo Upload Feature**
-            
-            Receipt scanning is currently being set up.
-            
-            Please use spreadsheet (CSV) upload - it's fast and works perfectly!
-            """)
+    if uploaded_file:
+        uploaded_data = pd.read_csv(uploaded_file)
+        st.success("File uploaded successfully")
     
     if uploaded_data is not None:
         st.session_state['raw_data'] = uploaded_data
@@ -964,6 +921,8 @@ with tab1:
                 if st.button("Upload New Data", use_container_width=True):
                     # Clear all session state
                     st.session_state.analysis_complete = False
+                    if 'raw_data' in st.session_state:
+                        del st.session_state['raw_data']
                     if 'data' in st.session_state:
                         del st.session_state['data']
                     if 'forecast_model' in st.session_state:
@@ -1041,24 +1000,9 @@ with tab2:
         # Overview Metrics
         st.markdown("#### Your Financial Overview")
         
-        col1, col2, col3 = st.columns(3)
+        col1, col2 = st.columns(2)
         
         with col1:
-            metrics = st.session_state.get('forecast_metrics')
-            if metrics and isinstance(metrics, dict):
-                r2 = metrics.get('r2', 0)
-                confidence = r2 * 100
-            else:
-                confidence = 0
-            st.markdown(f"""
-            <div class="metric-card">
-                <div class="metric-label">Forecast Confidence</div>
-                <div class="metric-value {'positive' if confidence > 70 else ''}">{confidence:.0f}%</div>
-                <div class="metric-description">{'Excellent' if confidence > 80 else 'Good' if confidence > 60 else 'Fair'} prediction accuracy</div>
-            </div>
-            """, unsafe_allow_html=True)
-        
-        with col2:
             wellness = st.session_state.get('wellness')
             if wellness and isinstance(wellness, dict):
                 score = wellness.get('score', 0)
@@ -1074,7 +1018,7 @@ with tab2:
             </div>
             """, unsafe_allow_html=True)
         
-        with col3:
+        with col2:
             anomalies = df['is_anomaly'].sum() if 'is_anomaly' in df.columns else 0
             st.markdown(f"""
             <div class="metric-card">
@@ -1098,7 +1042,11 @@ with tab2:
                 color_discrete_sequence=px.colors.sequential.Blues_r
             )
             
-            fig.update_traces(textposition='inside', textinfo='percent+label')
+            fig.update_traces(
+                textposition='inside',
+                textinfo='percent+label',
+                hovertemplate='<b>%{label}</b><br>Amount: $%{value:,.2f}<br>Percentage: %{percent}<extra></extra>'
+            )
             fig.update_layout(height=400, margin=dict(t=40, b=20, l=20, r=20))
             
             st.plotly_chart(fig, use_container_width=True)
@@ -1217,7 +1165,9 @@ with tab3:
                 fig.update_layout(height=400, margin=dict(t=40, b=20, l=20, r=20))
                 
                 st.plotly_chart(fig, use_container_width=True)
-        
+        else:
+            st.warning("Forecast model not available. Please re-upload and analyze your data.")
+    
     else:
         st.info("Upload transactions and analyze to see your forecast")
 
