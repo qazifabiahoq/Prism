@@ -959,36 +959,26 @@ with tab1:
         if st.session_state.analysis_complete:
             col1, col2 = st.columns([2, 1])
             with col1:
-                st.markdown("""
-                <div style="background: #E6F9F0; padding: 1rem; border-radius: 8px; border-left: 3px solid #00C389;">
-                    <p style="color: #00613D; margin: 0; font-weight: 600;">
-                    Analysis complete! Click Dashboard tab above to view results.
-                    </p>
-                </div>
-                """, unsafe_allow_html=True)
+                st.success("Analysis complete! Explore your results in the tabs above.")
             with col2:
-                if st.button("Analyze Again", use_container_width=True):
-                    # Re-run analysis with existing data
-                    with st.spinner("Re-analyzing your financial data..."):
-                        df_processed = FinancialIntelligence.process_data(uploaded_data)
-                        st.session_state['data'] = df_processed
-                        
-                        model, metrics, features = FinancialIntelligence.build_forecast_model(df_processed)
-                        st.session_state['forecast_model'] = model
-                        st.session_state['forecast_metrics'] = metrics
-                        st.session_state['forecast_features'] = features
-                        
-                        df_processed = FinancialIntelligence.detect_unusual_activity(df_processed)
-                        st.session_state['data'] = df_processed
-                        
-                        df_processed, pattern_summary = FinancialIntelligence.discover_patterns(df_processed)
-                        st.session_state['data'] = df_processed
-                        st.session_state['patterns'] = pattern_summary
-                        
-                        wellness = FinancialIntelligence.calculate_health_score(df_processed)
-                        st.session_state['wellness'] = wellness
-                        
-                        st.success("Analysis updated!")
+                if st.button("Upload New Data", use_container_width=True):
+                    # Clear all session state
+                    st.session_state.analysis_complete = False
+                    if 'data' in st.session_state:
+                        del st.session_state['data']
+                    if 'forecast_model' in st.session_state:
+                        del st.session_state['forecast_model']
+                    if 'forecast_metrics' in st.session_state:
+                        del st.session_state['forecast_metrics']
+                    if 'forecast_features' in st.session_state:
+                        del st.session_state['forecast_features']
+                    if 'patterns' in st.session_state:
+                        del st.session_state['patterns']
+                    if 'wellness' in st.session_state:
+                        del st.session_state['wellness']
+                    if 'dashboard_viewed' in st.session_state:
+                        del st.session_state['dashboard_viewed']
+                    st.rerun()
         else:
             if st.button("Analyze My Spending", use_container_width=True):
                 with st.spinner("Analyzing your financial data..."):
@@ -1017,30 +1007,7 @@ with tab1:
                     
                     st.session_state.analysis_complete = True
                     
-                    st.success("Analysis complete!")
-                    
-                    st.markdown("""
-                    <div style="background: linear-gradient(135deg, #00C389 0%, #00A876 100%); 
-                                color: white; 
-                                padding: 2rem; 
-                                border-radius: 12px; 
-                                text-align: center;
-                                margin: 1.5rem 0;
-                                box-shadow: 0 4px 12px rgba(0, 195, 137, 0.3);">
-                        <h2 style="color: white; margin: 0 0 1rem 0; font-size: 1.75rem;">Your Financial Analysis is Ready!</h2>
-                        <p style="color: white; font-size: 1.1rem; margin: 0 0 1.5rem 0; opacity: 0.95;">
-                            Click the <strong>Dashboard</strong> tab above to see your complete financial insights
-                        </p>
-                        <div style="background: rgba(255,255,255,0.2); 
-                                    padding: 1rem; 
-                                    border-radius: 8px;
-                                    border: 2px solid rgba(255,255,255,0.3);">
-                            <p style="color: white; margin: 0; font-size: 0.95rem;">
-                                <strong>Look up - click "Dashboard" to view your results</strong>
-                            </p>
-                        </div>
-                    </div>
-                    """, unsafe_allow_html=True)
+                    st.success("Analysis complete! View your insights in the Dashboard, Forecast, Alerts, and Assistant tabs above.")
                     
                     st.rerun()
     
