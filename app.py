@@ -71,8 +71,8 @@ st.markdown("""
     
     /* Header */
     .main-header {
-        background: linear-gradient(135deg, #001F3F 0%, #003D82 50%, #0066CC 100%);
-        padding: 3.5rem 2rem 3rem 2rem;
+        background: linear-gradient(135deg, #002855 0%, #003D82 50%, #0052A3 100%);
+        padding: 4rem 2rem 3.5rem 2rem;
         margin: -6rem -5rem 3rem -5rem;
         box-shadow: var(--shadow-lg);
         position: relative;
@@ -86,9 +86,22 @@ st.markdown("""
         left: 0;
         right: 0;
         bottom: 0;
-        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,50 Q300,0 600,50 T1200,50 L1200,0 L0,0 Z" fill="rgba(255,255,255,0.03)"/></svg>');
+        background-image: 
+            radial-gradient(circle at 20% 50%, rgba(255, 255, 255, 0.1) 0%, transparent 50%),
+            radial-gradient(circle at 80% 80%, rgba(255, 255, 255, 0.08) 0%, transparent 50%),
+            radial-gradient(circle at 40% 20%, rgba(0, 195, 137, 0.1) 0%, transparent 50%);
         background-size: cover;
-        opacity: 0.1;
+    }
+    
+    .main-header::after {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        height: 100px;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 100"><path d="M0,50 Q300,20 600,50 T1200,50 L1200,100 L0,100 Z" fill="rgba(255,255,255,0.05)"/></svg>');
+        background-size: cover;
     }
     
     .header-content {
@@ -97,20 +110,23 @@ st.markdown("""
     }
     
     .app-title {
-        font-size: 3rem;
-        font-weight: 800;
-        color: #FFFFFF;
+        font-size: 3.5rem;
+        font-weight: 900;
+        color: #FFFFFF !important;
         margin: 0;
-        letter-spacing: -1px;
-        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
+        letter-spacing: 2px;
+        text-shadow: 0 3px 15px rgba(0, 0, 0, 0.3);
+        text-transform: uppercase;
     }
     
     .app-tagline {
-        font-size: 1.25rem;
-        color: rgba(255, 255, 255, 0.9);
-        margin-top: 0.75rem;
-        font-weight: 400;
-        letter-spacing: 0.3px;
+        font-size: 1.35rem;
+        color: #FFFFFF !important;
+        margin-top: 1rem;
+        font-weight: 500;
+        letter-spacing: 0.5px;
+        text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+        opacity: 0.95;
     }
     
     /* Tabs - Professional Banking Style */
@@ -137,20 +153,26 @@ st.markdown("""
         padding: 0 2.5rem;
         font-size: 0.95rem;
         font-weight: 600;
-        color: var(--text-medium);
+        color: var(--text-medium) !important;
         transition: all 0.2s ease;
         letter-spacing: 0.3px;
     }
     
     .stTabs [data-baseweb="tab"]:hover {
         background: #F0F4F8;
-        color: var(--primary-blue);
+        color: var(--primary-blue) !important;
     }
     
     .stTabs [aria-selected="true"] {
-        background: var(--primary-blue);
+        background: var(--primary-blue) !important;
         color: #FFFFFF !important;
         border-bottom-color: var(--primary-blue);
+    }
+    
+    .stTabs [aria-selected="true"] p,
+    .stTabs [aria-selected="true"] span,
+    .stTabs [aria-selected="true"] div {
+        color: #FFFFFF !important;
     }
     
     .stTabs [data-baseweb="tab-panel"] {
@@ -160,18 +182,35 @@ st.markdown("""
     
     /* Typography */
     h1, h2, h3, h4, h5, h6 {
-        color: var(--text-dark);
+        color: var(--text-dark) !important;
         font-weight: 700;
     }
     
     h1 { font-size: 2.5rem; }
     h2 { font-size: 2rem; }
-    h3 { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-dark); }
+    h3 { 
+        font-size: 1.5rem; 
+        margin-bottom: 1.5rem; 
+        color: var(--text-dark) !important;
+        font-weight: 700;
+    }
     h4 { font-size: 1.25rem; }
     
-    p, div, span {
+    p, div, span, label {
         color: var(--text-medium);
         line-height: 1.6;
+    }
+    
+    /* Make all labels more visible */
+    label {
+        color: var(--text-dark) !important;
+        font-weight: 600;
+    }
+    
+    /* Improve radio button labels */
+    .stRadio label {
+        color: var(--text-dark) !important;
+        font-weight: 600;
     }
     
     /* Cards */
@@ -181,28 +220,29 @@ st.markdown("""
         border-radius: 12px;
         padding: 2rem 1.5rem;
         text-align: center;
-        box-shadow: var(--shadow);
-        transition: all 0.2s ease;
+        box-shadow: 0 2px 8px rgba(9, 30, 66, 0.1);
+        transition: all 0.3s ease;
         height: 100%;
     }
     
     .metric-card:hover {
-        transform: translateY(-4px);
-        box-shadow: var(--shadow-lg);
+        transform: translateY(-6px);
+        box-shadow: 0 8px 24px rgba(9, 30, 66, 0.15);
+        border-color: var(--accent-blue);
     }
     
     .metric-label {
         font-size: 0.875rem;
-        font-weight: 600;
+        font-weight: 700;
         color: var(--text-light);
         text-transform: uppercase;
-        letter-spacing: 0.5px;
+        letter-spacing: 0.8px;
         margin-bottom: 0.75rem;
     }
     
     .metric-value {
-        font-size: 2.25rem;
-        font-weight: 700;
+        font-size: 2.5rem;
+        font-weight: 800;
         color: var(--primary-blue);
         margin: 0.75rem 0;
         line-height: 1.2;
@@ -218,31 +258,32 @@ st.markdown("""
     
     .metric-description {
         font-size: 0.875rem;
-        color: var(--text-light);
+        color: var(--text-medium);
         margin-top: 0.5rem;
+        font-weight: 500;
     }
     
     /* Buttons */
     .stButton > button {
         background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
-        color: #FFFFFF;
+        color: #FFFFFF !important;
         border: none;
         border-radius: 8px;
         padding: 1rem 2.5rem;
-        font-size: 1rem;
-        font-weight: 600;
+        font-size: 1.05rem;
+        font-weight: 700;
         cursor: pointer;
         transition: all 0.3s ease;
         width: 100%;
         height: 56px;
-        box-shadow: 0 4px 12px rgba(0, 61, 130, 0.2);
-        letter-spacing: 0.3px;
+        box-shadow: 0 4px 12px rgba(0, 61, 130, 0.25);
+        letter-spacing: 0.5px;
     }
     
     .stButton > button:hover {
         background: linear-gradient(135deg, #0052A3 0%, #0077E6 100%);
         transform: translateY(-2px);
-        box-shadow: 0 6px 20px rgba(0, 61, 130, 0.3);
+        box-shadow: 0 6px 20px rgba(0, 61, 130, 0.35);
     }
     
     .stButton > button:active {
@@ -252,20 +293,28 @@ st.markdown("""
     /* File Uploader */
     [data-testid="stFileUploader"] {
         background: linear-gradient(135deg, #F0F7FF 0%, #E6F2FF 100%);
-        border: 2px dashed var(--accent-blue);
+        border: 3px dashed var(--accent-blue);
         border-radius: 12px;
         padding: 3rem 2rem;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
     }
     
     [data-testid="stFileUploader"]:hover {
         border-color: var(--primary-blue);
         background: linear-gradient(135deg, #E6F2FF 0%, #DBEAFE 100%);
+        box-shadow: 0 4px 12px rgba(0, 102, 204, 0.15);
     }
     
     [data-testid="stFileUploader"] section {
         border: none;
         padding: 1rem;
+    }
+    
+    [data-testid="stFileUploader"] button {
+        background: var(--primary-blue) !important;
+        color: white !important;
+        border-radius: 6px;
+        font-weight: 600;
     }
     
     /* Info Boxes */
@@ -289,10 +338,35 @@ st.markdown("""
     }
     
     /* Success/Warning/Info Messages */
-    .stSuccess, .stInfo, .stWarning {
+    .stSuccess, .stInfo, .stWarning, .stError {
         border-radius: 8px;
         padding: 1rem 1.5rem;
-        font-weight: 500;
+        font-weight: 600;
+        font-size: 0.95rem;
+    }
+    
+    .stSuccess {
+        background: linear-gradient(135deg, #E6F9F0 0%, #D1F4E0 100%);
+        border-left: 4px solid var(--success-green);
+        color: #00613D !important;
+    }
+    
+    .stInfo {
+        background: linear-gradient(135deg, #E6F2FF 0%, #D6EBFF 100%);
+        border-left: 4px solid var(--accent-blue);
+        color: #003D82 !important;
+    }
+    
+    .stWarning {
+        background: linear-gradient(135deg, #FFF4E6 0%, #FFE8CC 100%);
+        border-left: 4px solid #FF991F;
+        color: #663C00 !important;
+    }
+    
+    .stError {
+        background: linear-gradient(135deg, #FFE6E6 0%, #FFD6D6 100%);
+        border-left: 4px solid #FF5630;
+        color: #6B0000 !important;
     }
     
     /* Input Fields */
@@ -628,6 +702,8 @@ with tab1:
         ["CSV File", "Receipt/Screenshot" + (" (OCR Available)" if HAS_OCR else " (Install pytesseract)")],
         horizontal=True
     )
+    
+    st.info("💡 **Don't have data?** Download sample_transactions.csv or sample_receipt.txt from the GitHub repo to test!")
     
     uploaded_data = None
     
