@@ -1456,7 +1456,6 @@ with tab4:
 # TAB 5: ASSISTANT
 with tab5:
     st.markdown("### Financial Assistant")
-    st.markdown("*Powered by Advanced AI (Llama 3.3 70B)*")
     
     if HAS_GROQ:
         try:
@@ -1466,12 +1465,12 @@ with tab5:
                 df = st.session_state.get('data')
                 
                 st.markdown("""
-                Ask personalized questions about your spending and get AI-powered financial advice based on your actual data.
+                **Hi, I'm Prism.** Ask me anything about your financial data and I'll provide personalized advice.
                 """)
                 
                 question = st.text_input(
-                    "Ask me anything about your finances:",
-                    placeholder="Example: How can I reduce my spending? What's my biggest expense category?",
+                    "Your question:",
+                    placeholder="How can I reduce my spending? What's my biggest expense category?",
                     key="ai_question"
                 )
                 
@@ -1507,36 +1506,35 @@ Provide helpful, actionable financial advice in a friendly, professional tone. B
                         
                         st.markdown(f"""
                         <div class="info-card">
-                            <h4>AI Financial Advisor</h4>
+                            <h4>Prism</h4>
                             <p>{answer}</p>
                         </div>
                         """, unsafe_allow_html=True)
             
             elif not groq_key:
                 st.info("""
-                **AI Assistant - Generative AI Powered**
+                **Financial Assistant**
                 
-                This feature uses **Llama 3.3 70B** (state-of-the-art large language model) to provide:
-                - Personalized financial advice based on YOUR data
-                - Spending optimization recommendations  
-                - Budget planning assistance
-                - Financial health improvement tips
+                Get personalized advice based on your actual spending data:
+                - Spending optimization tips  
+                - Budget planning help
+                - Financial health guidance
                 
-                **Currently being configured for deployment.** All core analysis features work perfectly!
+                **Currently being set up.** All analysis features work perfectly!
                 """)
             else:
-                st.info("Analyze your transactions first to unlock AI-powered advice")
+                st.info("Analyze your transactions first to get personalized advice")
         
         except Exception as e:
-            st.error(f"Assistant error: {str(e)}")
+            st.error(f"Assistant temporarily unavailable. Please try again later.")
     
     else:
         st.info("""
-        **AI Financial Assistant**
+        **Financial Assistant**
         
-        Get personalized advice powered by advanced generative AI (Llama 3.3 70B).
+        Get personalized advice based on your spending patterns.
         
-        This feature is being configured. All core analysis features work perfectly!
+        Currently being set up. All analysis features work perfectly!
         """)
 
 # Footer
