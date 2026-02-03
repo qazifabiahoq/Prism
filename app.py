@@ -28,7 +28,7 @@ except:
 # Page Config
 st.set_page_config(
     page_title="Prism",
-    page_icon="💎",
+    page_icon="🔷",
     layout="wide",
     initial_sidebar_state="collapsed"
 )
@@ -836,7 +836,7 @@ with tab1:
     # Sample data downloads
     st.markdown("---")
     
-    with st.expander("📥 **Need sample data to test?** Click here"):
+    with st.expander("Need sample data to test? Click here"):
         st.markdown("**Download sample transaction data to try Prism:**")
         
         sample_csv = """Date,Amount,Description
@@ -856,7 +856,7 @@ with tab1:
 2024-02-20,90.00,Gas Station"""
         
         st.download_button(
-            label="💾 Download Sample Transactions (CSV)",
+            label="Download Sample Transactions (CSV)",
             data=sample_csv,
             file_name="prism_sample_transactions.csv",
             mime="text/csv",
@@ -980,12 +980,12 @@ with tab1:
                 st.markdown("""
                 <div style="background: #E6F9F0; padding: 1rem; border-radius: 8px; border-left: 3px solid #00C389;">
                     <p style="color: #00613D; margin: 0; font-weight: 600;">
-                    ✅ Analysis complete! Click <strong>Dashboard</strong> tab above to view results.
+                    Analysis complete! Click Dashboard tab above to view results.
                     </p>
                 </div>
                 """, unsafe_allow_html=True)
             with col2:
-                if st.button("🔄 Analyze Again", use_container_width=True):
+                if st.button("Analyze Again", use_container_width=True):
                     # Re-run analysis with existing data
                     with st.spinner("Re-analyzing your financial data..."):
                         df_processed = FinancialIntelligence.process_data(uploaded_data)
@@ -1036,7 +1036,7 @@ with tab1:
                     
                     st.session_state.analysis_complete = True
                     
-                    st.success("✅ Analysis complete!")
+                    st.success("Analysis complete!")
                     
                     st.markdown("""
                     <div style="background: linear-gradient(135deg, #00C389 0%, #00A876 100%); 
@@ -1046,7 +1046,7 @@ with tab1:
                                 text-align: center;
                                 margin: 1.5rem 0;
                                 box-shadow: 0 4px 12px rgba(0, 195, 137, 0.3);">
-                        <h2 style="color: white; margin: 0 0 1rem 0; font-size: 1.75rem;">🎉 Your Financial Analysis is Ready!</h2>
+                        <h2 style="color: white; margin: 0 0 1rem 0; font-size: 1.75rem;">Your Financial Analysis is Ready!</h2>
                         <p style="color: white; font-size: 1.1rem; margin: 0 0 1.5rem 0; opacity: 0.95;">
                             Click the <strong>Dashboard</strong> tab above to see your complete financial insights
                         </p>
@@ -1055,7 +1055,7 @@ with tab1:
                                     border-radius: 8px;
                                     border: 2px solid rgba(255,255,255,0.3);">
                             <p style="color: white; margin: 0; font-size: 0.95rem;">
-                                ⬆️ <strong>Look up - click "Dashboard" to view your results</strong> ⬆️
+                                <strong>Look up - click "Dashboard" to view your results</strong>
                             </p>
                         </div>
                     </div>
@@ -1094,7 +1094,7 @@ with tab2:
                         border-radius: 12px; 
                         border-left: 4px solid #0066CC;
                         margin-bottom: 2rem;">
-                <h4 style="color: #003D82; margin: 0 0 0.5rem 0;">👋 Welcome to Your Dashboard!</h4>
+                <h4 style="color: #003D82; margin: 0 0 0.5rem 0;">Welcome to Your Dashboard!</h4>
                 <p style="color: #1A1A1A; margin: 0; font-size: 0.95rem;">
                     Here's your complete financial overview. Scroll down to explore:
                     <strong>Forecast</strong>, <strong>Alerts</strong>, and <strong>AI Assistant</strong> tabs for deeper insights.
@@ -1397,7 +1397,7 @@ Provide helpful, actionable financial advice in a friendly, professional tone. B
             
             elif not groq_key:
                 st.info("""
-                **💡 AI Assistant - Generative AI Powered**
+                **AI Assistant - Generative AI Powered**
                 
                 This feature uses **Llama 3.3 70B** (state-of-the-art large language model) to provide:
                 - Personalized financial advice based on YOUR data
@@ -1415,7 +1415,7 @@ Provide helpful, actionable financial advice in a friendly, professional tone. B
     
     else:
         st.info("""
-        **💡 AI Financial Assistant**
+        **AI Financial Assistant**
         
         Get personalized advice powered by advanced generative AI (Llama 3.3 70B).
         
