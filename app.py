@@ -117,9 +117,11 @@ st.markdown("""
         color: #FFFFFF !important;
         margin: 0;
         letter-spacing: 4px;
-        text-shadow: 0 0 20px rgba(255, 255, 255, 0.8), 0 4px 20px rgba(0, 0, 0, 0.4);
+        text-shadow: 0 0 30px rgba(255, 255, 255, 1), 0 4px 25px rgba(255, 255, 255, 0.8), 0 8px 40px rgba(0, 0, 0, 0.5);
         text-transform: uppercase;
-        -webkit-text-stroke: 1px rgba(255, 255, 255, 0.3);
+        -webkit-text-fill-color: #FFFFFF !important;
+        paint-order: stroke fill;
+        filter: brightness(1.2) contrast(1.3);
     }
     
     .app-tagline {
@@ -128,8 +130,10 @@ st.markdown("""
         margin-top: 1.25rem;
         font-weight: 600;
         letter-spacing: 1px;
-        text-shadow: 0 0 15px rgba(255, 255, 255, 0.6), 0 2px 8px rgba(0, 0, 0, 0.3);
+        text-shadow: 0 0 20px rgba(255, 255, 255, 0.9), 0 2px 12px rgba(255, 255, 255, 0.7);
         opacity: 1;
+        -webkit-text-fill-color: #FFFFFF !important;
+        filter: brightness(1.15);
     }
     
     /* Tabs - Professional Banking Style - STICKY */
