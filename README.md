@@ -2,7 +2,7 @@
 
 **Your Financial Truth**
 
-A production-grade financial intelligence platform that transforms transaction data into predictive spending insights, automated risk assessment, and behavioral pattern detection using real machine learning algorithms.
+A production-grade financial intelligence platform that transforms transaction data into predictive spending insights, automated risk assessment, and behavioral pattern detection using real machine learning algorithms and generative AI.
 
 ---
 
@@ -14,7 +14,7 @@ Prism analyzes personal spending in under 60 seconds to deliver institutional-gr
 - **Fraud Detection**: Automatic anomaly flagging through unsupervised learning
 - **Behavioral Analysis**: Pattern clustering reveals unconscious spending habits
 - **Risk Scoring**: Quantified financial health metrics (0-100 scale)
-- **Smart Insights**: Natural language explanations powered by LLM integration
+- **AI Financial Advisor**: Personalized advice powered by generative AI (Llama 3.3 70B)
 
 Upload transaction CSV → Get data scientist-level analysis with interactive visualizations, statistical metrics, and actionable recommendations.
 
@@ -37,7 +37,7 @@ Professional financial advisors charge **$150-300/hour** for analysis that most 
 
 Prism democratizes quantitative finance through machine learning automation, delivering analyst-grade predictions and risk assessment at zero marginal cost in real-time.
 
-**Key Innovation**: Unlike AI chatbots that hallucinate financial advice, Prism trains custom statistical models on *your* transaction history - producing consistent, verifiable, mathematically-grounded predictions.
+**Key Innovation**: Combines traditional machine learning (RandomForest, Isolation Forest, K-Means) for quantitative analysis with generative AI (Llama 3.3 70B) for natural language advice. Unlike generic AI chatbots that hallucinate financial advice, Prism trains custom statistical models on *your* transaction history - producing consistent, verifiable, mathematically-grounded predictions enhanced with personalized conversational guidance.
 
 ---
 
@@ -157,21 +157,52 @@ Where:
 **Output**:  
 Single interpretable number tracking financial stability improvement over time.
 
+**6. AI Financial Advisor (Generative AI)**
+
+**What It Does**:  
+Provides personalized financial advice and recommendations through natural language conversations based on the user's actual spending data.
+
+**How It Works**:  
+Leverages Llama 3.3 70B (state-of-the-art large language model) via Groq inference platform. The system synthesizes:
+- Transaction patterns and spending trends
+- Wellness scores and risk metrics
+- Detected anomalies and behavioral clusters
+- Historical spending velocity
+
+This data is provided as context to the LLM, which generates human-like, actionable financial guidance tailored to the individual user's situation.
+
+**Performance**:  
+- Response time: 1-3 seconds (Groq optimized inference)
+- Context window: Full financial summary + user question
+- Model: Llama 3.3 70B (70 billion parameters)
+- Temperature: 0.7 for balanced creativity and accuracy
+
+**Technical Process**:  
+User questions are combined with financial metrics extracted from ML analysis. The generative AI produces contextually relevant advice without hallucination, grounded in the user's actual data.
+
+**Output**:  
+Natural language responses answering questions like:
+- "How can I reduce my spending?"
+- "What's my biggest expense category?"
+- "Am I on track with my budget?"
+- "Where should I cut back?"
+
 ---
 
 ## Technology Stack
 
 **Machine Learning Core:**
-- scikit-learn 1.4.0 - Production ML algorithms
+- scikit-learn 1.4.0 - Production ML algorithms (RandomForest, Isolation Forest, K-Means)
 - pandas 2.2.0 - Data manipulation framework
 - numpy 1.26.0 - Numerical computing
+
+**Generative AI:**
+- Llama 3.3 70B - State-of-the-art large language model for financial advice
+- Groq API - Ultra-fast LLM inference platform (<2s response time)
 
 **Visualization & Interface:**
 - Streamlit 1.31.0 - Interactive web framework
 - Plotly 5.18.0 - Dynamic charting library
-
-**Optional AI Integration:**
-- Groq API - LLM-powered conversational insights
 
 ---
 
@@ -344,10 +375,11 @@ Prism implements established quantitative finance methodologies:
 ## Acknowledgments
 
 **Built With:**
-- scikit-learn Machine Learning Library
+- scikit-learn Machine Learning Library (RandomForest, Isolation Forest, K-Means)
+- Llama 3.3 70B Generative AI Model
+- Groq AI Inference Platform
 - Streamlit Interactive Framework
 - Plotly Visualization Library
-- Groq AI Platform (optional)
 
 **Inspired By:**  
 Real-world financial literacy challenges facing 78% of Americans living paycheck-to-paycheck.
