@@ -3,14 +3,12 @@ import pandas as pd
 import numpy as np
 import plotly.express as px
 import plotly.graph_objects as go
-from plotly.subplots import make_subplots
 from datetime import datetime, timedelta
-from sklearn.ensemble import RandomForestRegressor, IsolationForest, RandomForestClassifier
+from sklearn.ensemble import RandomForestRegressor, IsolationForest
 from sklearn.cluster import KMeans
 from sklearn.model_selection import train_test_split
-from sklearn.metrics import mean_squared_error, r2_score, accuracy_score, classification_report
+from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.preprocessing import StandardScaler
-from sklearn.feature_extraction.text import TfidfVectorizer
 import warnings
 warnings.filterwarnings('ignore')
 
@@ -20,113 +18,194 @@ try:
 except:
     HAS_GROQ = False
 
-# Page configuration
+try:
+    import pytesseract
+    from PIL import Image
+    HAS_OCR = True
+except:
+    HAS_OCR = False
+
+# Page Config
 st.set_page_config(
-    page_title="MoneyMind Pro - ML-Powered Finance",
-    page_icon="💰",
+    page_title="Prism",
+    page_icon="💎",
     layout="wide",
-    initial_sidebar_state="expanded"
+    initial_sidebar_state="collapsed"
 )
 
-# Professional CSS
+# Professional Banking CSS
 st.markdown("""
 <style>
     @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap');
     
     :root {
-        --primary-blue: #1E3A8A;
-        --accent-green: #10B981;
-        --accent-purple: #8B5CF6;
-        --accent-orange: #F59E0B;
-        --light-bg: #F9FAFB;
-        --card-bg: #FFFFFF;
-        --text-dark: #1F2937;
-        --text-light: #6B7280;
-        --border-color: #E5E7EB;
-        --success-green: #059669;
-        --warning-red: #DC2626;
+        --primary-blue: #003D82;
+        --accent-blue: #0066CC;
+        --success-green: #00C389;
+        --bg-light: #F5F7FA;
+        --bg-white: #FFFFFF;
+        --text-dark: #1A1A1A;
+        --text-medium: #5E6C84;
+        --text-light: #8993A4;
+        --border: #DFE1E6;
+        --shadow: 0 2px 8px rgba(9, 30, 66, 0.08);
+        --shadow-lg: 0 8px 24px rgba(9, 30, 66, 0.12);
+    }
+    
+    * {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
     }
     
     .stApp {
-        background: var(--light-bg);
+        background: var(--bg-light);
     }
     
-    #MainMenu {visibility: hidden;}
-    footer {visibility: hidden;}
-    header {visibility: hidden;}
+    /* Hide Streamlit Branding */
+    #MainMenu, footer, header {visibility: hidden;}
     
-    body, p, div, span, label, input, textarea {
-        font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
-        color: var(--text-dark);
+    /* Hide Sidebar Completely */
+    [data-testid="stSidebar"],
+    [data-testid="collapsedControl"] {
+        display: none !important;
     }
     
-    h1, h2, h3, h4, h5, h6 {
-        font-family: 'Inter', sans-serif;
-        font-weight: 700;
-        color: var(--text-dark);
-    }
-    
+    /* Header */
     .main-header {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, #1E40AF 100%);
-        padding: 2.5rem 2rem;
-        border-radius: 0;
-        margin: -6rem -5rem 2rem -5rem;
-        text-align: center;
+        background: linear-gradient(135deg, #001F3F 0%, #003D82 50%, #0066CC 100%);
+        padding: 3.5rem 2rem 3rem 2rem;
+        margin: -6rem -5rem 3rem -5rem;
+        box-shadow: var(--shadow-lg);
+        position: relative;
+        overflow: hidden;
+    }
+    
+    .main-header::before {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        right: 0;
+        bottom: 0;
+        background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120"><path d="M0,50 Q300,0 600,50 T1200,50 L1200,0 L0,0 Z" fill="rgba(255,255,255,0.03)"/></svg>');
+        background-size: cover;
+        opacity: 0.1;
+    }
+    
+    .header-content {
+        position: relative;
+        z-index: 1;
     }
     
     .app-title {
-        font-size: 2.5rem;
+        font-size: 3rem;
         font-weight: 800;
         color: #FFFFFF;
         margin: 0;
-        letter-spacing: -0.02em;
-    }
-    
-    .app-subtitle {
-        font-size: 0.9rem;
-        color: rgba(255, 255, 255, 0.8);
-        margin-top: 0.5rem;
-        text-transform: uppercase;
-        letter-spacing: 0.1em;
-        font-weight: 600;
+        letter-spacing: -1px;
+        text-shadow: 0 2px 12px rgba(0, 0, 0, 0.2);
     }
     
     .app-tagline {
-        font-size: 1.1rem;
+        font-size: 1.25rem;
         color: rgba(255, 255, 255, 0.9);
-        margin-top: 0.5rem;
-        font-weight: 500;
+        margin-top: 0.75rem;
+        font-weight: 400;
+        letter-spacing: 0.3px;
     }
     
-    .metric-container {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        text-align: center;
-        height: 100%;
+    /* Tabs - Professional Banking Style */
+    .stTabs {
+        background: var(--bg-white);
+        border-radius: 8px 8px 0 0;
+        margin-top: 1rem;
+        box-shadow: var(--shadow);
+    }
+    
+    .stTabs [data-baseweb="tab-list"] {
+        gap: 0;
+        background: var(--bg-white);
+        border-bottom: 2px solid var(--border);
+        padding: 0;
+    }
+    
+    .stTabs [data-baseweb="tab"] {
+        height: 60px;
+        background: transparent;
+        border: none;
+        border-bottom: 3px solid transparent;
+        border-radius: 0;
+        padding: 0 2.5rem;
+        font-size: 0.95rem;
+        font-weight: 600;
+        color: var(--text-medium);
         transition: all 0.2s ease;
+        letter-spacing: 0.3px;
     }
     
-    .metric-container:hover {
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-        transform: translateY(-2px);
+    .stTabs [data-baseweb="tab"]:hover {
+        background: #F0F4F8;
+        color: var(--primary-blue);
+    }
+    
+    .stTabs [aria-selected="true"] {
+        background: var(--primary-blue);
+        color: #FFFFFF !important;
+        border-bottom-color: var(--primary-blue);
+    }
+    
+    .stTabs [data-baseweb="tab-panel"] {
+        padding: 2rem 1rem;
+        background: var(--bg-white);
+    }
+    
+    /* Typography */
+    h1, h2, h3, h4, h5, h6 {
+        color: var(--text-dark);
+        font-weight: 700;
+    }
+    
+    h1 { font-size: 2.5rem; }
+    h2 { font-size: 2rem; }
+    h3 { font-size: 1.5rem; margin-bottom: 1.5rem; color: var(--text-dark); }
+    h4 { font-size: 1.25rem; }
+    
+    p, div, span {
+        color: var(--text-medium);
+        line-height: 1.6;
+    }
+    
+    /* Cards */
+    .metric-card {
+        background: var(--bg-white);
+        border: 1px solid var(--border);
+        border-radius: 12px;
+        padding: 2rem 1.5rem;
+        text-align: center;
+        box-shadow: var(--shadow);
+        transition: all 0.2s ease;
+        height: 100%;
+    }
+    
+    .metric-card:hover {
+        transform: translateY(-4px);
+        box-shadow: var(--shadow-lg);
     }
     
     .metric-label {
         font-size: 0.875rem;
+        font-weight: 600;
         color: var(--text-light);
         text-transform: uppercase;
-        letter-spacing: 0.05em;
-        font-weight: 600;
-        margin-bottom: 0.5rem;
+        letter-spacing: 0.5px;
+        margin-bottom: 0.75rem;
     }
     
     .metric-value {
-        font-size: 2rem;
+        font-size: 2.25rem;
         font-weight: 700;
         color: var(--primary-blue);
-        margin: 0.5rem 0;
+        margin: 0.75rem 0;
+        line-height: 1.2;
     }
     
     .metric-value.positive {
@@ -134,114 +213,162 @@ st.markdown("""
     }
     
     .metric-value.negative {
-        color: var(--warning-red);
+        color: #FF5630;
     }
     
-    .metric-subtext {
-        font-size: 0.8rem;
+    .metric-description {
+        font-size: 0.875rem;
         color: var(--text-light);
-        margin-top: 0.25rem;
+        margin-top: 0.5rem;
     }
     
-    .ml-badge {
-        display: inline-block;
-        background: linear-gradient(135deg, var(--accent-purple) 0%, #A78BFA 100%);
-        color: white;
-        padding: 0.4rem 0.8rem;
-        border-radius: 20px;
-        font-size: 0.75rem;
-        font-weight: 600;
-        text-transform: uppercase;
-        letter-spacing: 0.05em;
-        margin-left: 0.5rem;
-    }
-    
+    /* Buttons */
     .stButton > button {
-        background: linear-gradient(135deg, var(--primary-blue) 0%, #1E40AF 100%);
+        background: linear-gradient(135deg, var(--primary-blue) 0%, var(--accent-blue) 100%);
         color: #FFFFFF;
         border: none;
         border-radius: 8px;
-        padding: 0.75rem 2rem;
+        padding: 1rem 2.5rem;
         font-size: 1rem;
         font-weight: 600;
         cursor: pointer;
-        transition: all 0.2s ease;
+        transition: all 0.3s ease;
         width: 100%;
-        height: 50px;
+        height: 56px;
+        box-shadow: 0 4px 12px rgba(0, 61, 130, 0.2);
+        letter-spacing: 0.3px;
     }
     
     .stButton > button:hover {
-        background: linear-gradient(135deg, #1E40AF 0%, #2563EB 100%);
-        transform: translateY(-1px);
-        box-shadow: 0 4px 12px rgba(30, 58, 138, 0.3);
+        background: linear-gradient(135deg, #0052A3 0%, #0077E6 100%);
+        transform: translateY(-2px);
+        box-shadow: 0 6px 20px rgba(0, 61, 130, 0.3);
     }
     
-    .insight-box {
-        background: linear-gradient(135deg, #EFF6FF 0%, #DBEAFE 100%);
+    .stButton > button:active {
+        transform: translateY(0);
+    }
+    
+    /* File Uploader */
+    [data-testid="stFileUploader"] {
+        background: linear-gradient(135deg, #F0F7FF 0%, #E6F2FF 100%);
+        border: 2px dashed var(--accent-blue);
+        border-radius: 12px;
+        padding: 3rem 2rem;
+        transition: all 0.2s ease;
+    }
+    
+    [data-testid="stFileUploader"]:hover {
+        border-color: var(--primary-blue);
+        background: linear-gradient(135deg, #E6F2FF 0%, #DBEAFE 100%);
+    }
+    
+    [data-testid="stFileUploader"] section {
+        border: none;
+        padding: 1rem;
+    }
+    
+    /* Info Boxes */
+    .info-card {
+        background: linear-gradient(135deg, #F0F7FF 0%, #E6F2FF 100%);
         border-left: 4px solid var(--primary-blue);
         border-radius: 8px;
-        padding: 1.5rem;
+        padding: 1.5rem 2rem;
         margin: 1.5rem 0;
     }
     
-    .insight-box h4 {
+    .info-card h4 {
         color: var(--primary-blue);
         margin-bottom: 0.75rem;
+        font-size: 1.125rem;
     }
     
-    .model-metrics {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 12px;
-        padding: 1.5rem;
-        margin: 1rem 0;
+    .info-card p {
+        color: var(--text-dark);
+        margin: 0.5rem 0;
     }
     
-    .model-metrics h4 {
-        color: var(--accent-purple);
-        margin-bottom: 1rem;
+    /* Success/Warning/Info Messages */
+    .stSuccess, .stInfo, .stWarning {
+        border-radius: 8px;
+        padding: 1rem 1.5rem;
+        font-weight: 500;
     }
     
-    [data-testid="stSidebar"] {
-        background: var(--card-bg);
-        border-right: 1px solid var(--border-color);
+    /* Input Fields */
+    .stTextInput input,
+    .stTextArea textarea {
+        background: var(--bg-white);
+        border: 2px solid var(--border);
+        border-radius: 8px;
+        padding: 0.875rem 1rem;
+        font-size: 0.95rem;
+        transition: all 0.2s ease;
     }
     
-    .stTabs [data-baseweb="tab-list"] {
-        gap: 1rem;
-        background: transparent;
+    .stTextInput input:focus,
+    .stTextArea textarea:focus {
+        border-color: var(--primary-blue);
+        box-shadow: 0 0 0 3px rgba(0, 102, 204, 0.1);
     }
     
-    .stTabs [data-baseweb="tab"] {
-        background: var(--card-bg);
-        border: 1px solid var(--border-color);
-        border-radius: 8px 8px 0 0;
-        padding: 0.75rem 1.5rem;
+    /* Data Tables */
+    .dataframe {
+        border: 1px solid var(--border);
+        border-radius: 8px;
+        overflow: hidden;
+    }
+    
+    /* Footer */
+    .app-footer {
+        text-align: center;
+        padding: 3rem 0 2rem 0;
+        margin-top: 4rem;
+        border-top: 1px solid var(--border);
+        color: var(--text-light);
+        font-size: 0.875rem;
+    }
+    
+    .app-footer strong {
+        color: var(--text-dark);
         font-weight: 600;
     }
     
-    .stTabs [aria-selected="true"] {
-        background: var(--primary-blue);
-        color: #FFFFFF;
-        border-color: var(--primary-blue);
+    /* Scrollbar */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+    
+    ::-webkit-scrollbar-track {
+        background: var(--bg-light);
+    }
+    
+    ::-webkit-scrollbar-thumb {
+        background: var(--border);
+        border-radius: 5px;
+    }
+    
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--text-light);
     }
 </style>
 """, unsafe_allow_html=True)
 
-# Initialize session state
-if 'ml_models_trained' not in st.session_state:
-    st.session_state.ml_models_trained = False
+# Initialize Session State
+if 'analysis_complete' not in st.session_state:
+    st.session_state.analysis_complete = False
 
-# ML Functions
-class MoneyMindML:
-    """Machine Learning engine for financial analysis"""
+# ML Engine Class
+class FinancialIntelligence:
+    """Backend ML engine - invisible to users"""
     
     @staticmethod
-    def engineer_features(df):
-        """Feature engineering for ML models"""
+    def process_data(df):
+        """Feature engineering"""
         df = df.copy()
         
-        # Convert date column
+        # Find date column
         date_col = None
         for col in df.columns:
             if any(keyword in col.lower() for keyword in ['date', 'time']):
@@ -253,7 +380,7 @@ class MoneyMindML:
             df['day_of_week'] = df['date'].dt.dayofweek
             df['day_of_month'] = df['date'].dt.day
             df['month'] = df['date'].dt.month
-            df['is_weekend'] = df['day_of_week'].isin([5, 6]).astype(int)
+            df['is_weekend'] = (df['day_of_week'] >= 5).astype(int)
             df['week_of_year'] = df['date'].dt.isocalendar().week
         
         # Find amount column
@@ -265,470 +392,470 @@ class MoneyMindML:
         
         if amount_col:
             df['amount'] = pd.to_numeric(df[amount_col], errors='coerce')
+            df['amount'] = df['amount'].abs()
             
             # Rolling statistics
             df['rolling_mean_7d'] = df['amount'].rolling(window=7, min_periods=1).mean()
             df['rolling_std_7d'] = df['amount'].rolling(window=7, min_periods=1).std()
             df['rolling_max_7d'] = df['amount'].rolling(window=7, min_periods=1).max()
             
+            # Z-score
+            mean_amount = df['amount'].mean()
+            std_amount = df['amount'].std()
+            df['z_score'] = (df['amount'] - mean_amount) / std_amount if std_amount > 0 else 0
+            
             # Spending velocity
             df['spending_velocity'] = df['amount'].diff().fillna(0)
-            
-            # Cumulative spending
             df['cumulative_spending'] = df['amount'].cumsum()
-            
-            # Z-score for anomaly detection
-            df['z_score'] = np.abs((df['amount'] - df['amount'].mean()) / df['amount'].std())
         
-        # Categorize transactions
-        desc_col = None
-        for col in df.columns:
-            if any(keyword in col.lower() for keyword in ['description', 'merchant', 'name']):
-                desc_col = col
-                break
+        # Auto-categorize
+        df['category'] = 'Other'
+        if 'description' in df.columns or 'Description' in df.columns:
+            desc_col = 'description' if 'description' in df.columns else 'Description'
+            df['category'] = df[desc_col].apply(FinancialIntelligence.categorize_transaction)
         
-        if desc_col:
-            df['category'] = df[desc_col].apply(MoneyMindML.categorize_transaction)
-            df['category_encoded'] = pd.Categorical(df['category']).codes
+        # Encode category
+        category_map = {'Food': 0, 'Transportation': 1, 'Shopping': 2, 'Bills': 3, 'Entertainment': 4, 'Other': 5}
+        df['category_encoded'] = df['category'].map(category_map).fillna(5)
         
         return df
     
     @staticmethod
     def categorize_transaction(description):
-        """Categorize transaction based on description"""
+        """Smart categorization"""
         if pd.isna(description):
             return 'Other'
         
-        description_lower = str(description).lower()
+        desc = str(description).lower()
         
-        categories = {
-            'Food & Dining': ['restaurant', 'cafe', 'coffee', 'starbucks', 'mcdonald', 'food', 'grocery', 'uber eats', 'doordash', 'chipotle', 'subway'],
-            'Transportation': ['uber', 'lyft', 'gas', 'fuel', 'parking', 'transit', 'subway'],
-            'Shopping': ['amazon', 'walmart', 'target', 'shopping', 'store', 'mall'],
-            'Entertainment': ['netflix', 'spotify', 'movie', 'theater', 'game', 'entertainment'],
-            'Bills & Utilities': ['electric', 'water', 'internet', 'phone', 'utility', 'bill']
-        }
+        food_keywords = ['restaurant', 'cafe', 'coffee', 'food', 'grocery', 'starbucks', 'mcdonald', 'pizza']
+        transport_keywords = ['uber', 'lyft', 'gas', 'fuel', 'parking', 'transit', 'bus', 'taxi']
+        shopping_keywords = ['amazon', 'store', 'shop', 'retail', 'clothing', 'mall']
+        bills_keywords = ['utility', 'electric', 'water', 'rent', 'mortgage', 'insurance', 'phone', 'internet']
+        entertainment_keywords = ['movie', 'theater', 'game', 'spotify', 'netflix', 'concert', 'gym']
         
-        for category, keywords in categories.items():
-            if any(keyword in description_lower for keyword in keywords):
-                return category
-        
-        return 'Other'
+        if any(kw in desc for kw in food_keywords):
+            return 'Food'
+        elif any(kw in desc for kw in transport_keywords):
+            return 'Transportation'
+        elif any(kw in desc for kw in shopping_keywords):
+            return 'Shopping'
+        elif any(kw in desc for kw in bills_keywords):
+            return 'Bills'
+        elif any(kw in desc for kw in entertainment_keywords):
+            return 'Entertainment'
+        else:
+            return 'Other'
     
     @staticmethod
-    def train_spending_predictor(df):
-        """Train ML model to predict future spending"""
+    def build_forecast_model(df):
+        """Train spending predictor"""
         try:
-            # Prepare features
-            feature_cols = ['day_of_week', 'day_of_month', 'month', 'is_weekend', 
-                          'rolling_mean_7d', 'category_encoded']
+            features = ['day_of_week', 'day_of_month', 'month', 'is_weekend', 'rolling_mean_7d', 'category_encoded']
+            features = [f for f in features if f in df.columns]
             
-            # Remove rows with NaN
-            df_clean = df[feature_cols + ['amount']].dropna()
+            X = df[features].fillna(0)
+            y = df['amount']
             
-            if len(df_clean) < 10:
+            if len(X) < 20:
                 return None, None, None
             
-            X = df_clean[feature_cols]
-            y = df_clean['amount']
-            
-            # Train/test split
             X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.2, random_state=42)
             
-            # Train model
-            model = RandomForestRegressor(n_estimators=100, random_state=42, max_depth=10)
+            model = RandomForestRegressor(n_estimators=100, max_depth=10, random_state=42)
             model.fit(X_train, y_train)
             
-            # Predictions
             y_pred = model.predict(X_test)
-            
-            # Metrics
             r2 = r2_score(y_test, y_pred)
             rmse = np.sqrt(mean_squared_error(y_test, y_pred))
             
-            metrics = {
-                'r2_score': r2,
-                'rmse': rmse,
-                'feature_importance': dict(zip(feature_cols, model.feature_importances_))
-            }
+            feature_importance = dict(zip(features, model.feature_importances_))
             
-            return model, metrics, feature_cols
+            return model, {'r2': r2, 'rmse': rmse, 'importance': feature_importance}, features
             
         except Exception as e:
-            print(f"Error training predictor: {e}")
+            print(f"Model error: {e}")
             return None, None, None
     
     @staticmethod
-    def detect_anomalies(df):
-        """Detect unusual spending patterns using Isolation Forest"""
+    def detect_unusual_activity(df):
+        """Anomaly detection"""
         try:
-            feature_cols = ['amount', 'rolling_mean_7d', 'rolling_std_7d', 'z_score']
-            df_clean = df[feature_cols].dropna()
+            features = ['amount', 'rolling_mean_7d', 'rolling_std_7d', 'z_score']
+            features = [f for f in features if f in df.columns]
             
-            if len(df_clean) < 10:
-                return df
+            X = df[features].fillna(0)
             
-            # Train Isolation Forest
             iso_forest = IsolationForest(contamination=0.1, random_state=42)
-            df.loc[df_clean.index, 'anomaly'] = iso_forest.fit_predict(df_clean)
-            df['is_anomaly'] = df['anomaly'] == -1
+            df['is_anomaly'] = iso_forest.fit_predict(X) == -1
             
             return df
             
         except Exception as e:
-            print(f"Error detecting anomalies: {e}")
+            print(f"Anomaly detection error: {e}")
             df['is_anomaly'] = False
             return df
     
     @staticmethod
-    def cluster_spending_patterns(df):
-        """Cluster spending patterns using K-Means"""
+    def discover_patterns(df):
+        """Clustering"""
         try:
-            feature_cols = ['amount', 'day_of_week', 'category_encoded']
-            df_clean = df[feature_cols].dropna()
+            features = ['amount', 'day_of_week', 'category_encoded']
+            features = [f for f in features if f in df.columns]
             
-            if len(df_clean) < 10:
-                return df, None
+            X = df[features].fillna(0)
             
-            # Standardize features
             scaler = StandardScaler()
-            X_scaled = scaler.fit_transform(df_clean)
+            X_scaled = scaler.fit_transform(X)
             
-            # K-Means clustering
             kmeans = KMeans(n_clusters=3, random_state=42)
-            df.loc[df_clean.index, 'spending_cluster'] = kmeans.fit_predict(X_scaled)
+            df['spending_pattern'] = kmeans.fit_predict(X_scaled)
             
-            # Get cluster characteristics
-            cluster_info = df.groupby('spending_cluster').agg({
-                'amount': ['mean', 'std', 'count']
+            # Describe patterns
+            pattern_summary = df.groupby('spending_pattern').agg({
+                'amount': ['mean', 'count'],
+                'category': lambda x: x.mode()[0] if len(x) > 0 else 'Unknown'
             }).round(2)
             
-            return df, cluster_info
+            return df, pattern_summary
             
         except Exception as e:
-            print(f"Error clustering: {e}")
+            print(f"Clustering error: {e}")
             return df, None
     
     @staticmethod
-    def calculate_risk_score(df):
-        """Calculate financial risk score"""
+    def calculate_health_score(df):
+        """Financial wellness scoring"""
         try:
-            total_spending = df['amount'].sum()
             avg_spending = df['amount'].mean()
             std_spending = df['amount'].std()
             
-            # Coefficient of variation (higher = more risk)
+            # Coefficient of variation
             cv = (std_spending / avg_spending) * 100 if avg_spending > 0 else 0
             
             # Anomaly rate
             anomaly_rate = df['is_anomaly'].sum() / len(df) * 100 if 'is_anomaly' in df.columns else 0
             
-            # Risk score (0-100)
+            # Risk score (inverted for wellness score)
             risk_score = min(100, (cv * 0.5) + (anomaly_rate * 5))
+            wellness_score = max(0, 100 - risk_score)
             
-            risk_category = 'Low' if risk_score < 30 else 'Medium' if risk_score < 60 else 'High'
+            if wellness_score >= 70:
+                category = 'Excellent'
+            elif wellness_score >= 50:
+                category = 'Good'
+            elif wellness_score >= 30:
+                category = 'Fair'
+            else:
+                category = 'Needs Attention'
             
             return {
-                'score': round(risk_score, 1),
-                'category': risk_category,
-                'cv': round(cv, 2),
-                'anomaly_rate': round(anomaly_rate, 2)
+                'score': round(wellness_score, 0),
+                'category': category,
+                'consistency': round(100 - cv, 1),
+                'unusual_rate': round(anomaly_rate, 1)
             }
             
         except Exception as e:
-            print(f"Error calculating risk: {e}")
-            return {'score': 0, 'category': 'Unknown', 'cv': 0, 'anomaly_rate': 0}
+            print(f"Wellness score error: {e}")
+            return {'score': 50, 'category': 'Unknown', 'consistency': 0, 'unusual_rate': 0}
+    
+    @staticmethod
+    def extract_from_image(image_file):
+        """OCR to extract transactions from receipt/screenshot"""
+        if not HAS_OCR:
+            return None
+        
+        try:
+            image = Image.open(image_file)
+            
+            # OCR
+            text = pytesseract.image_to_string(image)
+            
+            # Simple parsing (can be enhanced)
+            lines = text.split('\n')
+            transactions = []
+            
+            for line in lines:
+                # Look for amount patterns ($XX.XX or XX.XX)
+                import re
+                amounts = re.findall(r'\$?(\d+\.\d{2})', line)
+                
+                if amounts:
+                    transactions.append({
+                        'Date': datetime.now().strftime('%Y-%m-%d'),
+                        'Amount': float(amounts[0]),
+                        'Description': line.split(amounts[0])[0].strip()[:50]
+                    })
+            
+            if transactions:
+                return pd.DataFrame(transactions)
+            else:
+                return None
+                
+        except Exception as e:
+            print(f"OCR error: {e}")
+            return None
 
 # Header
 st.markdown("""
 <div class="main-header">
-    <h1 class="app-title">MoneyMind Pro</h1>
-    <p class="app-subtitle">Machine Learning Edition</p>
-    <p class="app-tagline">Smart Money, Smarter You</p>
+    <div class="header-content">
+        <h1 class="app-title">PRISM</h1>
+        <p class="app-tagline">Your Financial Truth</p>
+    </div>
 </div>
 """, unsafe_allow_html=True)
 
-# Sidebar
-with st.sidebar:
-    st.markdown("### ML-Powered Features")
-    st.markdown("""
-    <span class="ml-badge">ML</span> **Spending Predictor**  
-    RandomForest Regression
-    
-    <span class="ml-badge">ML</span> **Anomaly Detection**  
-    Isolation Forest
-    
-    <span class="ml-badge">ML</span> **Pattern Clustering**  
-    K-Means Algorithm
-    
-    <span class="ml-badge">ML</span> **Risk Scoring**  
-    Statistical Analysis
-    
-    <span class="ml-badge">ML</span> **Smart Categorization**  
-    Rule-based + TF-IDF
-    """, unsafe_allow_html=True)
-    
-    st.markdown("---")
-    
-    st.markdown("### Tech Stack")
-    st.markdown("""
-    **ML Libraries:**
-    - scikit-learn
-    - pandas
-    - numpy
-    
-    **Visualization:**
-    - plotly
-    
-    **AI Chat:**
-    - Groq (optional)
-    """)
-    
-    st.markdown("---")
-    
-    st.markdown("### 100% Free & Open Source")
-    st.markdown("No paid APIs required for ML features!")
-
-# Main tabs
+# Main Tabs
 tab1, tab2, tab3, tab4, tab5 = st.tabs([
-    "📊 Upload Data", 
-    "🤖 ML Models", 
-    "📈 Predictions", 
-    "🔍 Anomalies",
-    "💬 AI Chat"
+    "Upload", 
+    "Dashboard", 
+    "Forecast", 
+    "Alerts",
+    "Assistant"
 ])
 
+# TAB 1: UPLOAD
 with tab1:
-    st.markdown("### Upload Your Transaction Data")
+    st.markdown("### Upload Your Transactions")
+    st.markdown("Get instant insights from your spending data")
     
-    uploaded_file = st.file_uploader(
-        "Choose your CSV file",
-        type=['csv'],
-        help="Upload a CSV with Date, Amount, and Description columns"
+    st.markdown("---")
+    
+    upload_method = st.radio(
+        "Choose upload method:",
+        ["CSV File", "Receipt/Screenshot" + (" (OCR Available)" if HAS_OCR else " (Install pytesseract)")],
+        horizontal=True
     )
     
-    if uploaded_file:
-        df = pd.read_csv(uploaded_file)
-        st.session_state['raw_data'] = df
+    uploaded_data = None
+    
+    if upload_method == "CSV File":
+        uploaded_file = st.file_uploader(
+            "Upload your transaction history (CSV)",
+            type=['csv'],
+            help="CSV file with Date, Amount, and Description columns"
+        )
         
-        st.success("✓ File uploaded successfully!")
+        if uploaded_file:
+            uploaded_data = pd.read_csv(uploaded_file)
+            st.success("File uploaded successfully")
+    
+    else:
+        if HAS_OCR:
+            uploaded_image = st.file_uploader(
+                "Upload receipt or transaction screenshot",
+                type=['png', 'jpg', 'jpeg', 'pdf'],
+                help="We'll extract transaction details automatically"
+            )
+            
+            if uploaded_image:
+                with st.spinner("Extracting transaction data..."):
+                    uploaded_data = FinancialIntelligence.extract_from_image(uploaded_image)
+                    
+                    if uploaded_data is not None:
+                        st.success("Transactions extracted successfully")
+                    else:
+                        st.error("Could not extract transactions. Please try a clearer image or use CSV.")
+        else:
+            st.warning("Install pytesseract and PIL for receipt scanning: `pip install pytesseract pillow`")
+    
+    if uploaded_data is not None:
+        st.session_state['raw_data'] = uploaded_data
         
-        # Show preview
-        st.markdown("#### Data Preview")
-        st.dataframe(df.head(10), use_container_width=True)
+        # Preview
+        st.markdown("#### Your Data")
+        st.dataframe(uploaded_data.head(10), use_container_width=True)
         
-        # Basic stats
+        # Quick Stats
         col1, col2, col3, col4 = st.columns(4)
         
         with col1:
             st.markdown(f"""
-            <div class="metric-container">
+            <div class="metric-card">
                 <div class="metric-label">Transactions</div>
-                <div class="metric-value">{len(df):,}</div>
+                <div class="metric-value">{len(uploaded_data):,}</div>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
             st.markdown(f"""
-            <div class="metric-container">
-                <div class="metric-label">Columns</div>
-                <div class="metric-value">{len(df.columns)}</div>
+            <div class="metric-card">
+                <div class="metric-label">Data Fields</div>
+                <div class="metric-value">{len(uploaded_data.columns)}</div>
             </div>
             """, unsafe_allow_html=True)
         
         # Find amount column
         amount_col = None
-        for col in df.columns:
+        for col in uploaded_data.columns:
             if any(keyword in col.lower() for keyword in ['amount', 'value', 'total']):
                 amount_col = col
                 break
         
         if amount_col:
             with col3:
-                total = df[amount_col].sum()
+                total = uploaded_data[amount_col].sum()
                 st.markdown(f"""
-                <div class="metric-container">
+                <div class="metric-card">
                     <div class="metric-label">Total Spending</div>
                     <div class="metric-value">${total:,.2f}</div>
                 </div>
                 """, unsafe_allow_html=True)
             
             with col4:
-                avg = df[amount_col].mean()
+                avg = uploaded_data[amount_col].mean()
                 st.markdown(f"""
-                <div class="metric-container">
-                    <div class="metric-label">Avg Transaction</div>
+                <div class="metric-card">
+                    <div class="metric-label">Average Amount</div>
                     <div class="metric-value">${avg:,.2f}</div>
                 </div>
                 """, unsafe_allow_html=True)
         
-        # Feature Engineering Button
+        # Analyze Button
         st.markdown("---")
-        if st.button("🔧 Engineer Features & Train ML Models", use_container_width=True):
-            with st.spinner("Engineering features and training ML models..."):
-                # Feature engineering
-                df_engineered = MoneyMindML.engineer_features(df)
-                st.session_state['engineered_data'] = df_engineered
+        if st.button("Analyze My Spending", use_container_width=True):
+            with st.spinner("Analyzing your financial data..."):
+                # Process data
+                df_processed = FinancialIntelligence.process_data(uploaded_data)
+                st.session_state['data'] = df_processed
                 
-                # Train models
-                model, metrics, features = MoneyMindML.train_spending_predictor(df_engineered)
-                st.session_state['prediction_model'] = model
-                st.session_state['prediction_metrics'] = metrics
-                st.session_state['prediction_features'] = features
+                # Build forecast
+                model, metrics, features = FinancialIntelligence.build_forecast_model(df_processed)
+                st.session_state['forecast_model'] = model
+                st.session_state['forecast_metrics'] = metrics
+                st.session_state['forecast_features'] = features
                 
-                # Anomaly detection
-                df_with_anomalies = MoneyMindML.detect_anomalies(df_engineered)
-                st.session_state['engineered_data'] = df_with_anomalies
+                # Detect anomalies
+                df_processed = FinancialIntelligence.detect_unusual_activity(df_processed)
+                st.session_state['data'] = df_processed
                 
-                # Clustering
-                df_clustered, cluster_info = MoneyMindML.cluster_spending_patterns(df_with_anomalies)
-                st.session_state['engineered_data'] = df_clustered
-                st.session_state['cluster_info'] = cluster_info
+                # Find patterns
+                df_processed, pattern_summary = FinancialIntelligence.discover_patterns(df_processed)
+                st.session_state['data'] = df_processed
+                st.session_state['patterns'] = pattern_summary
                 
-                # Risk score
-                risk = MoneyMindML.calculate_risk_score(df_clustered)
-                st.session_state['risk_score'] = risk
+                # Calculate wellness
+                wellness = FinancialIntelligence.calculate_health_score(df_processed)
+                st.session_state['wellness'] = wellness
                 
-                st.session_state.ml_models_trained = True
+                st.session_state.analysis_complete = True
                 
-                st.success("✓ ML models trained successfully!")
+                st.success("Analysis complete! View your insights in the Dashboard tab.")
                 st.rerun()
     
     else:
-        st.info("👆 Upload a CSV file to get started")
-        
         st.markdown("""
-        <div class="insight-box">
-            <h4>What Makes This ML-Powered?</h4>
-            <p><strong>Real Machine Learning Models:</strong></p>
-            <ul>
-                <li><strong>RandomForest Regressor:</strong> Predicts future spending</li>
-                <li><strong>Isolation Forest:</strong> Detects unusual transactions</li>
-                <li><strong>K-Means Clustering:</strong> Groups spending patterns</li>
-                <li><strong>Feature Engineering:</strong> 15+ engineered features</li>
-                <li><strong>Statistical Analysis:</strong> Risk scoring algorithm</li>
+        <div class="info-card">
+            <h4>What You'll Get</h4>
+            <p><strong>Comprehensive Financial Analysis:</strong></p>
+            <ul style="margin: 1rem 0; padding-left: 1.5rem;">
+                <li><strong>Spending Forecast:</strong> See predicted spending for next 7 days</li>
+                <li><strong>Activity Alerts:</strong> Automatic detection of unusual charges</li>
+                <li><strong>Spending Patterns:</strong> Discover your financial habits</li>
+                <li><strong>Wellness Score:</strong> Track your financial health over time</li>
+                <li><strong>Smart Insights:</strong> Personalized recommendations</li>
             </ul>
-            <p style="margin-top: 1rem;"><em>All models trained on YOUR data - no pre-trained models!</em></p>
+            <p style="margin-top: 1rem;"><em>Analysis completes in under 30 seconds. Your data stays private - we never store it.</em></p>
         </div>
         """, unsafe_allow_html=True)
 
+# TAB 2: DASHBOARD
 with tab2:
-    st.markdown("### Machine Learning Models")
+    st.markdown("### Financial Dashboard")
     
-    if st.session_state.ml_models_trained:
-        df = st.session_state.get('engineered_data')
+    if st.session_state.analysis_complete:
+        df = st.session_state.get('data')
         
-        # Model Performance
-        st.markdown("#### Model Performance Metrics")
+        # Overview Metrics
+        st.markdown("#### Your Financial Overview")
         
         col1, col2, col3 = st.columns(3)
         
         with col1:
-            metrics = st.session_state.get('prediction_metrics', {})
-            r2 = metrics.get('r2_score', 0)
+            metrics = st.session_state.get('forecast_metrics', {})
+            r2 = metrics.get('r2', 0)
+            confidence = r2 * 100
             st.markdown(f"""
-            <div class="model-metrics">
-                <h4>Spending Predictor</h4>
-                <div class="metric-label">R² Score</div>
-                <div class="metric-value {'positive' if r2 > 0.7 else ''}">{r2:.3f}</div>
-                <div class="metric-subtext">{'Excellent' if r2 > 0.8 else 'Good' if r2 > 0.6 else 'Fair'} accuracy</div>
+            <div class="metric-card">
+                <div class="metric-label">Forecast Confidence</div>
+                <div class="metric-value {'positive' if confidence > 70 else ''}">{confidence:.0f}%</div>
+                <div class="metric-description">{'Excellent' if confidence > 80 else 'Good' if confidence > 60 else 'Fair'} prediction accuracy</div>
             </div>
             """, unsafe_allow_html=True)
         
         with col2:
-            risk = st.session_state.get('risk_score', {})
-            score = risk.get('score', 0)
-            category = risk.get('category', 'Unknown')
+            wellness = st.session_state.get('wellness', {})
+            score = wellness.get('score', 0)
+            category = wellness.get('category', 'Unknown')
             st.markdown(f"""
-            <div class="model-metrics">
-                <h4>Risk Assessment</h4>
-                <div class="metric-label">Risk Score</div>
-                <div class="metric-value {'negative' if score > 60 else 'positive' if score < 30 else ''}">{score:.1f}/100</div>
-                <div class="metric-subtext">{category} Risk</div>
+            <div class="metric-card">
+                <div class="metric-label">Financial Wellness</div>
+                <div class="metric-value {'positive' if score >= 70 else 'negative' if score < 30 else ''}">{score:.0f}</div>
+                <div class="metric-description">{category}</div>
             </div>
             """, unsafe_allow_html=True)
         
         with col3:
             anomalies = df['is_anomaly'].sum() if 'is_anomaly' in df.columns else 0
             st.markdown(f"""
-            <div class="model-metrics">
-                <h4>Anomaly Detection</h4>
-                <div class="metric-label">Anomalies Found</div>
+            <div class="metric-card">
+                <div class="metric-label">Activity Alerts</div>
                 <div class="metric-value {'negative' if anomalies > 5 else 'positive'}">{anomalies}</div>
-                <div class="metric-subtext">Unusual transactions</div>
+                <div class="metric-description">Unusual transactions</div>
             </div>
             """, unsafe_allow_html=True)
         
-        # Feature Importance
+        # Spending by Category
         st.markdown("---")
-        st.markdown("#### Feature Importance Analysis")
+        st.markdown("#### Spending by Category")
         
-        metrics = st.session_state.get('prediction_metrics', {})
-        if 'feature_importance' in metrics:
-            importance_df = pd.DataFrame(
-                list(metrics['feature_importance'].items()),
-                columns=['Feature', 'Importance']
-            ).sort_values('Importance', ascending=True)
+        if 'category' in df.columns and 'amount' in df.columns:
+            category_spending = df.groupby('category')['amount'].sum().sort_values(ascending=False)
             
-            fig = go.Figure(go.Bar(
-                x=importance_df['Importance'],
-                y=importance_df['Feature'],
-                orientation='h',
-                marker=dict(color='#8B5CF6')
-            ))
-            
-            fig.update_layout(
-                title='Which features matter most for prediction?',
-                xaxis_title='Importance Score',
-                yaxis_title='',
-                height=400,
-                margin=dict(l=20, r=20, t=40, b=20)
+            fig = px.pie(
+                values=category_spending.values,
+                names=category_spending.index,
+                title='Where Your Money Goes',
+                color_discrete_sequence=px.colors.sequential.Blues_r
             )
+            
+            fig.update_traces(textposition='inside', textinfo='percent+label')
+            fig.update_layout(height=400, margin=dict(t=40, b=20, l=20, r=20))
             
             st.plotly_chart(fig, use_container_width=True)
         
-        # Spending Clusters
+        # Spending Patterns
         st.markdown("---")
-        st.markdown("#### Spending Pattern Clusters")
+        st.markdown("#### Your Spending Patterns")
         
-        cluster_info = st.session_state.get('cluster_info')
-        if cluster_info is not None:
-            st.dataframe(cluster_info, use_container_width=True)
-            
-            if 'spending_cluster' in df.columns:
-                fig = px.scatter(
-                    df.dropna(subset=['spending_cluster']),
-                    x='day_of_week',
-                    y='amount',
-                    color='spending_cluster',
-                    title='Spending Patterns by Cluster',
-                    labels={'day_of_week': 'Day of Week', 'amount': 'Amount ($)'}
-                )
-                st.plotly_chart(fig, use_container_width=True)
+        patterns = st.session_state.get('patterns')
+        if patterns is not None:
+            st.dataframe(patterns, use_container_width=True)
         
     else:
-        st.info("👈 Upload data and train models first")
+        st.info("Upload your transactions and analyze to view your dashboard")
 
+# TAB 3: FORECAST
 with tab3:
-    st.markdown("### Spending Predictions")
+    st.markdown("### 7-Day Spending Forecast")
     
-    if st.session_state.ml_models_trained:
-        df = st.session_state.get('engineered_data')
-        
-        st.markdown("#### Next 7 Days Predicted Spending")
-        
-        model = st.session_state.get('prediction_model')
-        features = st.session_state.get('prediction_features')
+    if st.session_state.analysis_complete:
+        df = st.session_state.get('data')
+        model = st.session_state.get('forecast_model')
+        features = st.session_state.get('forecast_features')
         
         if model and features:
-            # Generate predictions for next 7 days
+            st.markdown("#### Predicted Spending")
+            
+            # Generate predictions
             last_date = df['date'].max() if 'date' in df.columns else datetime.now()
             predictions = []
             
             for i in range(1, 8):
                 future_date = last_date + timedelta(days=i)
                 
-                # Create feature vector
                 feature_dict = {
                     'day_of_week': future_date.dayofweek,
                     'day_of_month': future_date.day,
@@ -742,22 +869,22 @@ with tab3:
                 pred = model.predict(X_pred)[0]
                 
                 predictions.append({
-                    'Date': future_date.strftime('%Y-%m-%d'),
-                    'Predicted Spending': f'${pred:.2f}'
+                    'Date': future_date.strftime('%A, %b %d'),
+                    'Predicted Amount': f'${pred:.2f}'
                 })
             
             pred_df = pd.DataFrame(predictions)
             st.dataframe(pred_df, use_container_width=True)
             
-            # Total predicted
-            total_pred = sum([float(p['Predicted Spending'].replace('$', '')) for p in predictions])
+            # Summary metrics
+            total_pred = sum([float(p['Predicted Amount'].replace('$', '')) for p in predictions])
             
             col1, col2, col3 = st.columns(3)
             
             with col1:
                 st.markdown(f"""
-                <div class="metric-container">
-                    <div class="metric-label">Next Week Total</div>
+                <div class="metric-card">
+                    <div class="metric-label">Week Total</div>
                     <div class="metric-value">${total_pred:,.2f}</div>
                 </div>
                 """, unsafe_allow_html=True)
@@ -765,7 +892,7 @@ with tab3:
             with col2:
                 avg_pred = total_pred / 7
                 st.markdown(f"""
-                <div class="metric-container">
+                <div class="metric-card">
                     <div class="metric-label">Daily Average</div>
                     <div class="metric-value">${avg_pred:,.2f}</div>
                 </div>
@@ -775,206 +902,176 @@ with tab3:
                 current_avg = df['amount'].mean()
                 change = ((avg_pred - current_avg) / current_avg * 100) if current_avg > 0 else 0
                 st.markdown(f"""
-                <div class="metric-container">
-                    <div class="metric-label">vs Current Avg</div>
+                <div class="metric-card">
+                    <div class="metric-label">vs Current Average</div>
                     <div class="metric-value {'positive' if change < 0 else 'negative'}">{change:+.1f}%</div>
                 </div>
                 """, unsafe_allow_html=True)
-        
-        # Visualization
-        st.markdown("---")
-        st.markdown("#### Historical vs Predicted Spending")
-        
-        # Combine historical and predicted
-        historical = df[['date', 'amount']].tail(14).copy() if 'date' in df.columns and 'amount' in df.columns else None
-        
-        if historical is not None:
-            historical['type'] = 'Historical'
             
-            future_data = pd.DataFrame([
-                {
-                    'date': last_date + timedelta(days=i),
-                    'amount': float(predictions[i-1]['Predicted Spending'].replace('$', '')),
-                    'type': 'Predicted'
-                }
-                for i in range(1, 8)
-            ])
+            # Visualization
+            st.markdown("---")
+            st.markdown("#### Spending Trend")
             
-            combined = pd.concat([historical, future_data])
-            
-            fig = px.line(
-                combined,
-                x='date',
-                y='amount',
-                color='type',
-                title='Spending Trend: Historical + ML Predictions',
-                labels={'date': 'Date', 'amount': 'Amount ($)', 'type': 'Data Type'}
-            )
-            
-            st.plotly_chart(fig, use_container_width=True)
+            if 'date' in df.columns and 'amount' in df.columns:
+                historical = df[['date', 'amount']].tail(14).copy()
+                historical['type'] = 'Historical'
+                
+                future_data = pd.DataFrame([
+                    {
+                        'date': last_date + timedelta(days=i),
+                        'amount': float(predictions[i-1]['Predicted Amount'].replace('$', '')),
+                        'type': 'Forecast'
+                    }
+                    for i in range(1, 8)
+                ])
+                
+                combined = pd.concat([historical, future_data])
+                
+                fig = px.line(
+                    combined,
+                    x='date',
+                    y='amount',
+                    color='type',
+                    title='Historical Spending + 7-Day Forecast',
+                    labels={'date': 'Date', 'amount': 'Amount ($)', 'type': ''},
+                    color_discrete_map={'Historical': '#003D82', 'Forecast': '#00C389'}
+                )
+                
+                fig.update_layout(height=400, margin=dict(t=40, b=20, l=20, r=20))
+                
+                st.plotly_chart(fig, use_container_width=True)
         
     else:
-        st.info("👈 Upload data and train models first")
+        st.info("Upload transactions and analyze to see your forecast")
 
+# TAB 4: ALERTS
 with tab4:
-    st.markdown("### Anomaly Detection")
+    st.markdown("### Activity Alerts")
     
-    if st.session_state.ml_models_trained:
-        df = st.session_state.get('engineered_data')
+    if st.session_state.analysis_complete:
+        df = st.session_state.get('data')
         
         if 'is_anomaly' in df.columns:
             anomalies = df[df['is_anomaly'] == True]
             
-            st.markdown(f"#### Found {len(anomalies)} Unusual Transactions")
+            st.markdown(f"#### {len(anomalies)} Unusual Transactions Detected")
             
             if len(anomalies) > 0:
-                # Show anomalies
-                display_cols = [col for col in ['date', 'amount', 'description', 'category', 'z_score'] if col in anomalies.columns]
-                st.dataframe(anomalies[display_cols].sort_values('amount', ascending=False), use_container_width=True)
+                # Display anomalies
+                display_cols = [col for col in ['date', 'amount', 'description', 'category'] if col in anomalies.columns]
+                if display_cols:
+                    st.dataframe(
+                        anomalies[display_cols].sort_values('amount', ascending=False),
+                        use_container_width=True
+                    )
                 
                 # Visualization
                 st.markdown("---")
-                st.markdown("#### Anomaly Visualization")
+                st.markdown("#### Activity Pattern")
                 
                 if 'date' in df.columns and 'amount' in df.columns:
                     fig = go.Figure()
                     
-                    # Normal transactions
                     normal = df[df['is_anomaly'] == False]
                     fig.add_trace(go.Scatter(
                         x=normal['date'],
                         y=normal['amount'],
                         mode='markers',
                         name='Normal',
-                        marker=dict(color='#10B981', size=8)
+                        marker=dict(color='#003D82', size=8)
                     ))
                     
-                    # Anomalies
                     fig.add_trace(go.Scatter(
                         x=anomalies['date'],
                         y=anomalies['amount'],
                         mode='markers',
-                        name='Anomaly',
-                        marker=dict(color='#DC2626', size=12, symbol='x')
+                        name='Unusual',
+                        marker=dict(color='#FF5630', size=12, symbol='x')
                     ))
                     
                     fig.update_layout(
-                        title='Transaction Anomalies Detected by Isolation Forest',
+                        title='Normal vs Unusual Transactions',
                         xaxis_title='Date',
                         yaxis_title='Amount ($)',
-                        height=400
+                        height=400,
+                        margin=dict(t=40, b=20, l=20, r=20)
                     )
                     
                     st.plotly_chart(fig, use_container_width=True)
-                
-                # Insights
-                st.markdown("""
-                <div class="insight-box">
-                    <h4>What Are Anomalies?</h4>
-                    <p>Anomalies are transactions that significantly differ from your normal spending patterns. 
-                    They could indicate:</p>
-                    <ul>
-                        <li>Large unexpected purchases</li>
-                        <li>Potentially fraudulent transactions</li>
-                        <li>One-time expenses (travel, medical, etc.)</li>
-                        <li>Data entry errors</li>
-                    </ul>
-                    <p style="margin-top: 1rem;"><strong>ML Model Used:</strong> Isolation Forest (unsupervised learning)</p>
-                </div>
-                """, unsafe_allow_html=True)
             else:
-                st.success("No anomalies detected - your spending is consistent!")
+                st.success("Great news! No unusual activity detected in your transactions.")
         
     else:
-        st.info("👈 Upload data and train models first")
+        st.info("Upload transactions and analyze to see alerts")
 
+# TAB 5: ASSISTANT
 with tab5:
-    st.markdown("### AI Financial Assistant")
+    st.markdown("### Financial Assistant")
     
     if HAS_GROQ:
         try:
             groq_key = st.secrets.get("groq", {}).get("api_key")
             
-            if groq_key and st.session_state.ml_models_trained:
-                df = st.session_state.get('engineered_data')
+            if st.session_state.analysis_complete and groq_key:
+                df = st.session_state.get('data')
                 
-                st.markdown("#### Ask Questions About Your Spending")
-                
-                col1, col2 = st.columns(2)
-                
-                with col1:
-                    if st.button("What are my ML insights?", use_container_width=True):
-                        st.session_state['ai_question'] = "Based on my ML analysis, what are the key insights?"
-                
-                with col2:
-                    if st.button("How can I save money?", use_container_width=True):
-                        st.session_state['ai_question'] = "Based on my spending patterns, how can I save money?"
+                st.markdown("Ask me anything about your spending patterns and financial health.")
                 
                 question = st.text_input(
-                    "Or ask your own question:",
-                    value=st.session_state.get('ai_question', ''),
-                    placeholder="e.g., Should I be worried about my anomalies?"
+                    "Your question:",
+                    placeholder="e.g., What can I do to improve my financial health?"
                 )
                 
-                if st.button("Get AI Answer", use_container_width=True) and question:
-                    with st.spinner("Analyzing with AI..."):
-                        # Prepare context
-                        metrics = st.session_state.get('prediction_metrics', {})
-                        risk = st.session_state.get('risk_score', {})
-                        
-                        context = f"""
-ML Analysis Results:
-- Model Accuracy (R²): {metrics.get('r2_score', 0):.3f}
-- Risk Score: {risk.get('score', 0):.1f}/100 ({risk.get('category', 'Unknown')} risk)
-- Anomalies Detected: {df['is_anomaly'].sum() if 'is_anomaly' in df.columns else 0}
-- Total Spending: ${df['amount'].sum():,.2f}
-- Average Transaction: ${df['amount'].mean():,.2f}
-- Spending Clusters: {df['spending_cluster'].nunique() if 'spending_cluster' in df.columns else 0}
+                if question:
+                    client = Groq(api_key=groq_key)
+                    
+                    # Build context
+                    context = f"""
+User's financial data summary:
+- Total transactions: {len(df)}
+- Average spending: ${df['amount'].mean():.2f}
+- Wellness score: {st.session_state.get('wellness', {}).get('score', 0)}/100
+- Unusual transactions: {df['is_anomaly'].sum() if 'is_anomaly' in df.columns else 0}
+- Top category: {df['category'].mode()[0] if 'category' in df.columns else 'Unknown'}
 
-User Question: {question}
+User question: {question}
+
+Provide helpful, actionable financial advice in a friendly tone.
 """
-                        
-                        client = Groq(api_key=groq_key)
+                    
+                    with st.spinner("Thinking..."):
                         completion = client.chat.completions.create(
                             model="llama-3.3-70b-versatile",
-                            messages=[
-                                {"role": "system", "content": "You are a professional financial advisor with ML expertise. Explain insights clearly and provide actionable advice."},
-                                {"role": "user", "content": context}
-                            ],
-                            temperature=0.7,
+                            messages=[{"role": "user", "content": context}],
                             max_tokens=500
                         )
                         
                         answer = completion.choices[0].message.content
                         
                         st.markdown(f"""
-                        <div class="insight-box">
-                            <h4>AI Response</h4>
+                        <div class="info-card">
+                            <h4>Response</h4>
                             <p>{answer}</p>
                         </div>
                         """, unsafe_allow_html=True)
-                        
-                        if 'ai_question' in st.session_state:
-                            del st.session_state['ai_question']
             
             elif not groq_key:
-                st.warning("Groq API key not configured. Add it to secrets to enable AI chat.")
+                st.warning("Assistant requires Groq API key. Add it to Streamlit secrets to enable.")
             else:
-                st.info("👈 Upload data and train ML models first")
+                st.info("Analyze your transactions first to use the Assistant")
         
         except Exception as e:
             st.error(f"Error: {str(e)}")
     
     else:
-        st.warning("Groq library not installed. Install with: pip install groq")
-        st.info("AI chat is optional - all ML features work without it!")
+        st.warning("Install Groq library for AI assistant: `pip install groq`")
+        st.info("The Assistant is optional - all analysis features work without it")
 
 # Footer
-st.markdown("---")
 st.markdown("""
-<div style="text-align: center; color: var(--text-light); font-size: 0.875rem;">
-    <p><strong>MoneyMind Pro</strong> - ML-Powered Financial Analysis</p>
-    <p>Professional Machine Learning Edition | 100% Free & Open Source</p>
-    <p><em>RandomForest · Isolation Forest · K-Means · Feature Engineering · scikit-learn</em></p>
+<div class="app-footer">
+    <p><strong>PRISM</strong></p>
+    <p>Your Financial Truth</p>
+    <p style="margin-top: 0.5rem;"><em>Secure • Private • Free</em></p>
 </div>
 """, unsafe_allow_html=True)
