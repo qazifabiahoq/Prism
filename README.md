@@ -5,6 +5,8 @@
 A production-grade financial intelligence platform that transforms transaction data into predictive spending insights, automated risk assessment, and behavioral pattern detection using real machine learning algorithms and generative AI.
 
 ---
+## Demo 
+https://prismfinance.streamlit.app/
 
 ## What It Does
 
