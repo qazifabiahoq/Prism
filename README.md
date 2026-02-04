@@ -8,6 +8,9 @@ A production-grade financial intelligence platform that transforms transaction d
 ## Demo 
 https://prismfinance.streamlit.app/
 
+## Youtube
+https://youtu.be/YrNj56mfyb8?si=2FdtHxA-bPG_OP0E
+
 ## What It Does
 
 Prism analyzes personal spending in under 60 seconds to deliver institutional-grade financial intelligence:
