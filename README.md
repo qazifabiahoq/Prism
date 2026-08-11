@@ -5,9 +5,6 @@
 A production-grade financial intelligence platform that transforms transaction data into predictive spending insights, automated risk assessment, and behavioral pattern detection using real machine learning algorithms and generative AI.
 
 ---
-## Demo 
-https://prismfinance.streamlit.app/
-
 ## Youtube
 https://youtu.be/YrNj56mfyb8?si=2FdtHxA-bPG_OP0E
 
@@ -206,8 +203,10 @@ Natural language responses answering questions like:
 - Groq API - Ultra-fast LLM inference platform (<2s response time)
 
 **Visualization & Interface:**
-- Streamlit 1.31.0 - Interactive web framework
-- Plotly 5.18.0 - Dynamic charting library
+- Next.js 15 - React framework with serverless API routes
+- Tailwind CSS - Utility-first styling
+- Recharts - Dynamic charting library
+- Vercel - Deployment and Python serverless functions
 
 ---
 
@@ -302,7 +301,7 @@ Financial stress is **#1 cause of adult anxiety**. Prism reduces stress through:
 - Optimal dataset: 50-10,000 transactions
 - Memory footprint: 50-200 MB during training
 - Inference latency: <500ms for 7-day forecast
-- Concurrent users: Streamlit-limited, not ML-limited
+- Concurrent users: Scales with Vercel serverless functions, not ML-limited
 
 ---
 
@@ -383,8 +382,8 @@ Prism implements established quantitative finance methodologies:
 - scikit-learn Machine Learning Library (RandomForest, Isolation Forest, K-Means)
 - Llama 3.3 70B Generative AI Model
 - Groq AI Inference Platform
-- Streamlit Interactive Framework
-- Plotly Visualization Library
+- Next.js & Tailwind CSS
+- Recharts Visualization Library
 
 **Inspired By:**  
 Real-world financial literacy challenges facing 78% of Americans living paycheck-to-paycheck.

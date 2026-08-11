@@ -1,0 +1,6 @@
+{
+  "functions": {
+    "api/analyze.py": { "maxDuration": 30, "memory": 1024 },
+    "api/ask.py": { "maxDuration": 15 }
+  }
+}

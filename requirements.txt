@@ -1,9 +1,4 @@
-streamlit
-pandas
-numpy
-plotly
-scikit-learn
-groq
-pytesseract
-pillow
-opencv-python
+pandas==2.2.2
+numpy==1.26.4
+scikit-learn==1.5.1
+groq==0.11.0
