@@ -27,7 +27,7 @@ export function Alerts({ result }: { result: AnalysisResult }) {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div>
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-navy-950 sm:text-3xl">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl">
           Activity Alerts
         </h2>
         <p className="mt-1.5 text-sm text-slate-500 sm:text-base">
@@ -60,14 +60,14 @@ export function Alerts({ result }: { result: AnalysisResult }) {
             <div className="h-72 sm:h-80">
               <ResponsiveContainer width="100%" height="100%">
                 <ScatterChart margin={{ left: -10, right: 10, top: 10, bottom: 0 }}>
-                  <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F3" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#ECEEF4" />
                   <XAxis
                     dataKey="x"
                     type="number"
                     domain={["dataMin", "dataMax"]}
                     tickFormatter={(v) => new Date(v).toLocaleDateString("en-US", { month: "short", day: "numeric" })}
                     tick={{ fontSize: 11, fill: "#94A3B8" }}
-                    axisLine={{ stroke: "#E2E8F3" }}
+                    axisLine={{ stroke: "#ECEEF4" }}
                     tickLine={false}
                   />
                   <YAxis
@@ -82,16 +82,16 @@ export function Alerts({ result }: { result: AnalysisResult }) {
                   <Tooltip
                     formatter={(value: number) => formatCurrency(value)}
                     labelFormatter={() => ""}
-                    contentStyle={{ borderRadius: 12, border: "1px solid #E2E8F3", fontSize: 13 }}
+                    contentStyle={{ borderRadius: 12, border: "1px solid #ECEEF4", fontSize: 13 }}
                   />
-                  <Scatter data={normalPoints} fill="#0F2A63" fillOpacity={0.6} name="Normal" />
+                  <Scatter data={normalPoints} fill="#1E2536" fillOpacity={0.6} name="Normal" />
                   <Scatter data={anomalyPoints} fill="#E11D48" shape="cross" name="Unusual" />
                 </ScatterChart>
               </ResponsiveContainer>
             </div>
             <div className="mt-3 flex items-center justify-center gap-6 text-xs font-medium text-slate-500">
               <span className="flex items-center gap-1.5">
-                <span className="h-2 w-2 rounded-full bg-navy-800" /> Normal
+                <span className="h-2 w-2 rounded-full bg-ink-800" /> Normal
               </span>
               <span className="flex items-center gap-1.5">
                 <span className="h-2 w-2 rounded-full bg-rose-500" /> Unusual
@@ -107,7 +107,7 @@ export function Alerts({ result }: { result: AnalysisResult }) {
               {anomalies.items.map((item, i) => (
                 <div key={i} className="flex items-center justify-between gap-4 px-6 py-4 sm:px-7">
                   <div className="min-w-0">
-                    <div className="truncate text-sm font-semibold text-navy-950">
+                    <div className="truncate text-sm font-semibold text-ink-950">
                       {item.description || "Unlabeled transaction"}
                     </div>
                     <div className="mt-0.5 text-xs text-slate-400">

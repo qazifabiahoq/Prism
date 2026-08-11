@@ -12,6 +12,7 @@ import { Forecast } from "./Forecast";
 import { Alerts } from "./Alerts";
 import { Assistant } from "./Assistant";
 import { analyzeTransactions } from "@/lib/api";
+import { generateSampleTransactions } from "@/lib/sample-data";
 import type { AnalysisResult, TabKey } from "@/lib/types";
 
 type Row = Record<string, unknown>;
@@ -52,6 +53,11 @@ export function AppShell() {
     setError(null);
   };
 
+  const handleTryDemo = () => {
+    handleRowsParsed(generateSampleTransactions(120), "sample_transactions.csv");
+    scrollToApp();
+  };
+
   const handleAnalyze = async () => {
     if (!rows) return;
     setAnalyzing(true);
@@ -83,10 +89,10 @@ export function AppShell() {
 
   return (
     <div ref={heroRef}>
-      <Nav hasAnalysis={!!result} onNavigate={handleNav} />
+      <Nav hasAnalysis={!!result} onNavigate={handleNav} onTryDemo={handleTryDemo} />
       {!showApp && (
         <>
-          <Hero onTryDemo={scrollToApp} onUpload={scrollToApp} />
+          <Hero onTryDemo={handleTryDemo} onUpload={scrollToApp} />
           <Features />
           <Footer />
         </>
@@ -150,7 +156,7 @@ function EmptyState({ message, onGoUpload }: { message: string; onGoUpload: () =
       <p className="text-sm font-medium text-slate-500">{message}</p>
       <button
         onClick={onGoUpload}
-        className="focus-ring mt-5 rounded-full bg-navy-950 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-navy-800"
+        className="focus-ring mt-5 rounded-full bg-ink-950 px-5 py-2.5 text-sm font-bold text-white transition hover:bg-ink-800"
       >
         Go to Upload
       </button>

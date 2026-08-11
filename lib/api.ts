@@ -1,4 +1,4 @@
-import type { AnalysisResponse, AssistantResponse } from "./types";
+import type { AnalysisResponse, AssistantResponse, ReceiptResponse } from "./types";
 
 export async function analyzeTransactions(
   rows: Record<string, unknown>[]
@@ -11,6 +11,30 @@ export async function analyzeTransactions(
 
   if (!res.ok) {
     let message = `Analysis failed (${res.status})`;
+    try {
+      const body = await res.json();
+      if (body?.error) message = body.error;
+    } catch {
+      // ignore
+    }
+    return { ok: false, error: message };
+  }
+
+  return res.json();
+}
+
+export async function extractReceipt(
+  image: string,
+  mimeType: string
+): Promise<ReceiptResponse> {
+  const res = await fetch("/api/receipt", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ image, mimeType }),
+  });
+
+  if (!res.ok) {
+    let message = `Photo scanning failed (${res.status})`;
     try {
       const body = await res.json();
       if (body?.error) message = body.error;

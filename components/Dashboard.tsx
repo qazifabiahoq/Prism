@@ -6,12 +6,12 @@ import type { AnalysisResult } from "@/lib/types";
 import { formatCurrency, formatNumber } from "@/lib/format";
 import { StatCard } from "./StatCard";
 
-const CATEGORY_COLORS = ["#0F2A63", "#1B4796", "#2DD4BF", "#5EEAD4", "#E8C05F", "#94A3B8"];
+const CATEGORY_COLORS = ["#4143C7", "#7C7FF2", "#10B981", "#F59E0B", "#FB7185", "#94A3B8"];
 
 const WELLNESS_TONE: Record<string, string> = {
-  Excellent: "#14B8A6",
-  Good: "#2563EB",
-  Fair: "#E8A93C",
+  Excellent: "#10B981",
+  Good: "#5457E5",
+  Fair: "#F59E0B",
   "Needs Attention": "#E11D48",
   Unknown: "#94A3B8",
 };
@@ -25,7 +25,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div>
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-navy-950 sm:text-3xl">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl">
           Financial Dashboard
         </h2>
         <p className="mt-1.5 text-sm text-slate-500 sm:text-base">
@@ -40,7 +40,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
           </div>
           <div className="mt-4 flex items-center gap-6">
             <svg width="120" height="120" viewBox="0 0 120 120" className="shrink-0 -rotate-90">
-              <circle cx="60" cy="60" r="54" fill="none" stroke="#EEF2F8" strokeWidth="10" />
+              <circle cx="60" cy="60" r="54" fill="none" stroke="#F4F5F9" strokeWidth="10" />
               <circle
                 cx="60"
                 cy="60"
@@ -54,7 +54,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
               />
             </svg>
             <div>
-              <div className="font-display text-4xl font-extrabold tabular text-navy-950">
+              <div className="font-display text-4xl font-extrabold tabular text-ink-950">
                 {wellness.score.toFixed(0)}
                 <span className="text-lg font-semibold text-slate-400">/100</span>
               </div>
@@ -103,7 +103,7 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
                 </Pie>
                 <Tooltip
                   formatter={(value: number, name: string) => [formatCurrency(value), name]}
-                  contentStyle={{ borderRadius: 12, border: "1px solid #E2E8F3", fontSize: 13 }}
+                  contentStyle={{ borderRadius: 12, border: "1px solid #ECEEF4", fontSize: 13 }}
                 />
                 <Legend
                   layout="horizontal"
@@ -121,10 +121,10 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
                     className="h-2.5 w-2.5 rounded-full"
                     style={{ backgroundColor: CATEGORY_COLORS[i % CATEGORY_COLORS.length] }}
                   />
-                  <span className="text-sm font-semibold text-navy-950">{c.category}</span>
+                  <span className="text-sm font-semibold text-ink-950">{c.category}</span>
                 </div>
                 <div className="text-right">
-                  <div className="text-sm font-bold tabular text-navy-950">
+                  <div className="text-sm font-bold tabular text-ink-950">
                     {formatCurrency(c.amount)}
                   </div>
                   <div className="text-[0.7rem] text-slate-400">{c.pct.toFixed(1)}%</div>
@@ -143,10 +143,10 @@ export function Dashboard({ result }: { result: AnalysisResult }) {
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-3">
             {patterns.map((p) => (
               <div key={p.cluster} className="rounded-xl border border-slate-200 bg-surface-50 p-5">
-                <div className="text-xs font-bold uppercase tracking-wide text-navy-600">
+                <div className="text-xs font-bold uppercase tracking-wide text-ink-600">
                   {p.label}
                 </div>
-                <div className="mt-2 font-display text-2xl font-extrabold tabular text-navy-950">
+                <div className="mt-2 font-display text-2xl font-extrabold tabular text-ink-950">
                   {formatCurrency(p.avgAmount)}
                 </div>
                 <div className="mt-1 text-xs text-slate-500">

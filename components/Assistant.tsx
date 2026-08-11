@@ -59,7 +59,7 @@ export function Assistant({ result }: { result: AnalysisResult }) {
   return (
     <div className="mx-auto max-w-3xl">
       <div className="text-center">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-navy-950 sm:text-3xl">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl">
           Financial Assistant
         </h2>
         <p className="mt-1.5 text-sm text-slate-500 sm:text-base">
@@ -73,7 +73,7 @@ export function Assistant({ result }: { result: AnalysisResult }) {
             <div key={i} className={`flex gap-3 ${m.role === "user" ? "flex-row-reverse" : ""}`}>
               <div
                 className={`flex h-8 w-8 shrink-0 items-center justify-center rounded-full ${
-                  m.role === "user" ? "bg-navy-950 text-white" : "bg-accent-500/15 text-navy-700"
+                  m.role === "user" ? "bg-ink-950 text-white" : "bg-accent-500/15 text-ink-700"
                 }`}
               >
                 {m.role === "user" ? <User size={15} /> : <Bot size={15} />}
@@ -81,8 +81,8 @@ export function Assistant({ result }: { result: AnalysisResult }) {
               <div
                 className={`max-w-[80%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${
                   m.role === "user"
-                    ? "rounded-tr-sm bg-navy-950 text-white"
-                    : "rounded-tl-sm bg-surface-100 text-navy-900"
+                    ? "rounded-tr-sm bg-ink-950 text-white"
+                    : "rounded-tl-sm bg-surface-100 text-ink-900"
                 }`}
               >
                 {m.text}
@@ -91,7 +91,7 @@ export function Assistant({ result }: { result: AnalysisResult }) {
           ))}
           {loading && (
             <div className="flex gap-3">
-              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/15 text-navy-700">
+              <div className="flex h-8 w-8 shrink-0 items-center justify-center rounded-full bg-accent-500/15 text-ink-700">
                 <Bot size={15} />
               </div>
               <div className="flex items-center gap-2 rounded-2xl rounded-tl-sm bg-surface-100 px-4 py-3 text-sm text-slate-500">
@@ -113,7 +113,7 @@ export function Assistant({ result }: { result: AnalysisResult }) {
               <button
                 key={s}
                 onClick={() => send(s)}
-                className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-navy-400 hover:text-navy-800"
+                className="focus-ring rounded-full border border-slate-200 bg-white px-3 py-1.5 text-xs font-medium text-slate-600 transition hover:border-accent-400 hover:text-ink-800"
               >
                 {s}
               </button>
@@ -132,12 +132,12 @@ export function Assistant({ result }: { result: AnalysisResult }) {
             value={input}
             onChange={(e) => setInput(e.target.value)}
             placeholder="Ask about your spending…"
-            className="focus-ring min-w-0 flex-1 rounded-full border border-slate-200 bg-surface-50 px-4 py-2.5 text-sm text-navy-950 outline-none placeholder:text-slate-400"
+            className="focus-ring min-w-0 flex-1 rounded-full border border-slate-200 bg-surface-50 px-4 py-2.5 text-sm text-ink-950 outline-none placeholder:text-slate-400"
           />
           <button
             type="submit"
             disabled={loading || !input.trim()}
-            className="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-navy-950 text-white transition hover:bg-navy-800 disabled:opacity-40"
+            className="focus-ring flex h-10 w-10 shrink-0 items-center justify-center rounded-full bg-ink-950 text-white transition hover:bg-ink-800 disabled:opacity-40"
           >
             <Send size={16} />
           </button>

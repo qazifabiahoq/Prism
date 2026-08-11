@@ -5,6 +5,9 @@
 A production-grade financial intelligence platform that transforms transaction data into predictive spending insights, automated risk assessment, and behavioral pattern detection using real machine learning algorithms and generative AI.
 
 ---
+## Live Demo
+https://prism-znjp.vercel.app
+
 ## Youtube
 https://youtu.be/YrNj56mfyb8?si=2FdtHxA-bPG_OP0E
 
