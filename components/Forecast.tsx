@@ -34,7 +34,7 @@ export function Forecast({ result }: { result: AnalysisResult }) {
   return (
     <div className="mx-auto max-w-5xl space-y-8">
       <div>
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-navy-950 sm:text-3xl">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl">
           7-Day Spending Forecast
         </h2>
         <p className="mt-1.5 text-sm text-slate-500 sm:text-base">
@@ -62,20 +62,20 @@ export function Forecast({ result }: { result: AnalysisResult }) {
             <AreaChart data={chartData} margin={{ left: -10, right: 10, top: 10 }}>
               <defs>
                 <linearGradient id="histGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#0F2A63" stopOpacity={0.35} />
-                  <stop offset="100%" stopColor="#0F2A63" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#1E2536" stopOpacity={0.35} />
+                  <stop offset="100%" stopColor="#1E2536" stopOpacity={0} />
                 </linearGradient>
                 <linearGradient id="fcGrad" x1="0" y1="0" x2="0" y2="1">
-                  <stop offset="0%" stopColor="#14B8A6" stopOpacity={0.4} />
-                  <stop offset="100%" stopColor="#14B8A6" stopOpacity={0} />
+                  <stop offset="0%" stopColor="#5457E5" stopOpacity={0.4} />
+                  <stop offset="100%" stopColor="#5457E5" stopOpacity={0} />
                 </linearGradient>
               </defs>
-              <CartesianGrid strokeDasharray="3 3" stroke="#E2E8F3" vertical={false} />
+              <CartesianGrid strokeDasharray="3 3" stroke="#ECEEF4" vertical={false} />
               <XAxis
                 dataKey="date"
                 tickFormatter={(v) => formatDateShort(v)}
                 tick={{ fontSize: 11, fill: "#94A3B8" }}
-                axisLine={{ stroke: "#E2E8F3" }}
+                axisLine={{ stroke: "#ECEEF4" }}
                 tickLine={false}
               />
               <YAxis
@@ -91,12 +91,12 @@ export function Forecast({ result }: { result: AnalysisResult }) {
                   formatCurrency(value),
                   name === "historical" ? "Historical" : "Forecast",
                 ]}
-                contentStyle={{ borderRadius: 12, border: "1px solid #E2E8F3", fontSize: 13 }}
+                contentStyle={{ borderRadius: 12, border: "1px solid #ECEEF4", fontSize: 13 }}
               />
               <Area
                 type="monotone"
                 dataKey="historical"
-                stroke="#0F2A63"
+                stroke="#1E2536"
                 strokeWidth={2.5}
                 fill="url(#histGrad)"
                 connectNulls={false}
@@ -104,7 +104,7 @@ export function Forecast({ result }: { result: AnalysisResult }) {
               <Area
                 type="monotone"
                 dataKey="forecast"
-                stroke="#14B8A6"
+                stroke="#5457E5"
                 strokeWidth={2.5}
                 strokeDasharray="5 4"
                 fill="url(#fcGrad)"
@@ -115,7 +115,7 @@ export function Forecast({ result }: { result: AnalysisResult }) {
         </div>
         <div className="mt-3 flex items-center justify-center gap-6 text-xs font-medium text-slate-500">
           <span className="flex items-center gap-1.5">
-            <span className="h-0.5 w-4 rounded-full bg-navy-700" /> Historical
+            <span className="h-0.5 w-4 rounded-full bg-ink-700" /> Historical
           </span>
           <span className="flex items-center gap-1.5">
             <span className="h-0.5 w-4 rounded-full border-t-2 border-dashed border-accent-600" /> Forecast
@@ -130,8 +130,8 @@ export function Forecast({ result }: { result: AnalysisResult }) {
         <div className="divide-y divide-slate-100">
           {forecast.predictions.map((p) => (
             <div key={p.date} className="flex items-center justify-between px-6 py-3.5 sm:px-7">
-              <span className="text-sm font-semibold text-navy-900">{p.label}</span>
-              <span className="font-display text-sm font-bold tabular text-navy-950">
+              <span className="text-sm font-semibold text-ink-900">{p.label}</span>
+              <span className="font-display text-sm font-bold tabular text-ink-950">
                 {formatCurrency(p.amount)}
               </span>
             </div>
@@ -141,8 +141,8 @@ export function Forecast({ result }: { result: AnalysisResult }) {
 
       {forecast.r2 != null && (
         <div className="rounded-2xl border border-slate-200 bg-surface-50 p-5 text-center text-xs font-medium text-slate-500 sm:text-sm">
-          Model confidence: R² {forecast.r2.toFixed(2)} · RMSE {formatCurrency(forecast.rmse ?? 0)} — trained
-          fresh on your uploaded transactions.
+          Model confidence: R² {forecast.r2.toFixed(2)} · RMSE {formatCurrency(forecast.rmse ?? 0)}.
+          Trained fresh on your uploaded transactions.
         </div>
       )}
     </div>

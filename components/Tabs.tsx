@@ -32,8 +32,8 @@ export function Tabs({
                 onClick={() => onChange(tab.key)}
                 className={`focus-ring relative flex shrink-0 items-center gap-2 rounded-full px-4 py-2.5 text-sm font-semibold transition ${
                   isActive
-                    ? "bg-navy-950 text-white shadow-md"
-                    : "text-slate-500 hover:bg-surface-100 hover:text-navy-900"
+                    ? "bg-ink-950 text-white shadow-md"
+                    : "text-slate-500 hover:bg-surface-100 hover:text-ink-900"
                 }`}
               >
                 <tab.icon size={15} />
@@ -41,7 +41,7 @@ export function Tabs({
                 {tab.key === "alerts" && !!alertCount && alertCount > 0 && (
                   <span
                     className={`ml-0.5 inline-flex h-5 min-w-[1.25rem] items-center justify-center rounded-full px-1 text-[0.65rem] font-bold ${
-                      isActive ? "bg-rose-400 text-navy-950" : "bg-rose-100 text-rose-600"
+                      isActive ? "bg-rose-400 text-ink-950" : "bg-rose-100 text-rose-600"
                     }`}
                   >
                     {alertCount}

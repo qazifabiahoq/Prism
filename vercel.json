@@ -1,6 +1,7 @@
 {
   "functions": {
     "api/analyze.py": { "maxDuration": 30, "memory": 1024 },
-    "api/ask.py": { "maxDuration": 15 }
+    "api/ask.py": { "maxDuration": 15 },
+    "api/receipt.py": { "maxDuration": 30, "memory": 1024 }
   }
 }

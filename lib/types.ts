@@ -103,5 +103,11 @@ export interface AssistantResponse {
   error?: string;
 }
 
+export interface ReceiptResponse {
+  ok: boolean;
+  rows?: Array<{ Date: string | null; Amount: number; Description: string }>;
+  error?: string;
+}
+
 export type UploadMethod = "csv" | "photo";
 export type TabKey = "upload" | "dashboard" | "forecast" | "alerts" | "assistant";

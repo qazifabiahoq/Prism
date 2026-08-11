@@ -9,32 +9,24 @@ const config: Config = {
     extend: {
       colors: {
         ink: {
-          950: "#020617",
-          900: "#050B18",
-          800: "#0A1428",
-          700: "#0F1E38",
-        },
-        navy: {
-          950: "#040A17",
-          900: "#071433",
-          800: "#0B1E4A",
-          700: "#0F2A63",
-          600: "#14367D",
-          500: "#1B4796",
+          950: "#0B0F19",
+          900: "#131826",
+          800: "#1E2536",
+          700: "#333B4F",
+          600: "#4B5468",
+          500: "#646D82",
+          400: "#8891A3",
         },
         accent: {
-          400: "#5EEAD4",
-          500: "#2DD4BF",
-          600: "#14B8A6",
-        },
-        gold: {
-          400: "#F5D68A",
-          500: "#E8C05F",
+          50: "#EEF0FF",
+          400: "#7C7FF2",
+          500: "#5457E5",
+          600: "#4143C7",
         },
         surface: {
-          50: "#F7F9FC",
-          100: "#EEF2F8",
-          200: "#E2E8F3",
+          50: "#FAFBFC",
+          100: "#F4F5F9",
+          200: "#ECEEF4",
         },
       },
       fontFamily: {
@@ -43,14 +35,14 @@ const config: Config = {
         mono: ["var(--font-mono)", "monospace"],
       },
       boxShadow: {
-        card: "0 1px 2px rgba(10, 20, 40, 0.04), 0 8px 24px -8px rgba(10, 20, 40, 0.10)",
-        "card-hover": "0 4px 12px rgba(10, 20, 40, 0.06), 0 16px 40px -12px rgba(10, 20, 40, 0.18)",
-        glow: "0 0 0 1px rgba(94, 234, 212, 0.15), 0 8px 32px -8px rgba(45, 212, 191, 0.25)",
+        card: "0 1px 2px rgba(19, 24, 38, 0.04), 0 8px 24px -8px rgba(19, 24, 38, 0.08)",
+        "card-hover": "0 4px 12px rgba(19, 24, 38, 0.05), 0 16px 40px -12px rgba(19, 24, 38, 0.14)",
+        glow: "0 0 0 1px rgba(84, 87, 229, 0.12), 0 8px 32px -8px rgba(84, 87, 229, 0.28)",
       },
       backgroundImage: {
         "grid-pattern":
-          "linear-gradient(rgba(255,255,255,0.035) 1px, transparent 1px), linear-gradient(90deg, rgba(255,255,255,0.035) 1px, transparent 1px)",
-        "radial-fade": "radial-gradient(circle, rgba(94,234,212,0.16) 0%, transparent 70%)",
+          "linear-gradient(rgba(19,24,38,0.045) 1px, transparent 1px), linear-gradient(90deg, rgba(19,24,38,0.045) 1px, transparent 1px)",
+        "radial-fade": "radial-gradient(circle, rgba(84,87,229,0.12) 0%, transparent 70%)",
       },
       animation: {
         "fade-up": "fadeUp 0.6s ease-out both",

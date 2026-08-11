@@ -8,10 +8,12 @@ import {
   ImageIcon,
   Loader2,
   RefreshCcw,
+  ScanEye,
   Sparkles,
   UploadCloud,
 } from "lucide-react";
 import { generateSampleTransactions } from "@/lib/sample-data";
+import { extractReceipt } from "@/lib/api";
 import { formatCurrency, formatNumber } from "@/lib/format";
 
 type Row = Record<string, unknown>;
@@ -23,6 +25,18 @@ function findAmountColumn(rows: Row[]): string | null {
     cols.find((c) => ["amount", "value", "total", "price"].some((k) => c.toLowerCase().includes(k))) ??
     null
   );
+}
+
+function fileToBase64(file: File): Promise<string> {
+  return new Promise((resolve, reject) => {
+    const reader = new FileReader();
+    reader.onload = () => {
+      const result = reader.result as string;
+      resolve(result.split(",")[1] ?? "");
+    };
+    reader.onerror = reject;
+    reader.readAsDataURL(file);
+  });
 }
 
 export function UploadPanel({
@@ -47,7 +61,9 @@ export function UploadPanel({
   const [method, setMethod] = useState<"csv" | "photo">("csv");
   const [dragActive, setDragActive] = useState(false);
   const [parseError, setParseError] = useState<string | null>(null);
+  const [scanning, setScanning] = useState(false);
   const inputRef = useRef<HTMLInputElement>(null);
+  const photoInputRef = useRef<HTMLInputElement>(null);
 
   const parseFile = useCallback(
     (file: File) => {
@@ -72,11 +88,34 @@ export function UploadPanel({
     [onRowsParsed]
   );
 
+  const scanPhoto = useCallback(
+    async (file: File) => {
+      setParseError(null);
+      setScanning(true);
+      try {
+        const base64 = await fileToBase64(file);
+        const res = await extractReceipt(base64, file.type || "image/jpeg");
+        if (res.ok && res.rows) {
+          onRowsParsed(res.rows, file.name);
+        } else {
+          setParseError(res.error ?? "Could not read that photo. Please try a clearer image or use CSV upload.");
+        }
+      } catch {
+        setParseError("Could not read that photo. Please try a clearer image or use CSV upload.");
+      } finally {
+        setScanning(false);
+      }
+    },
+    [onRowsParsed]
+  );
+
   const handleDrop = (e: React.DragEvent<HTMLDivElement>) => {
     e.preventDefault();
     setDragActive(false);
     const file = e.dataTransfer.files?.[0];
-    if (file) parseFile(file);
+    if (!file) return;
+    if (method === "csv") parseFile(file);
+    else scanPhoto(file);
   };
 
   const handleTryDemo = () => {
@@ -91,7 +130,7 @@ export function UploadPanel({
   return (
     <div className="mx-auto max-w-3xl">
       <div className="text-center">
-        <h2 className="font-display text-2xl font-extrabold tracking-tight text-navy-950 sm:text-3xl">
+        <h2 className="font-display text-2xl font-extrabold tracking-tight text-ink-950 sm:text-3xl">
           Upload Your Transactions
         </h2>
         <p className="mt-2 text-sm text-slate-500 sm:text-base">
@@ -103,7 +142,7 @@ export function UploadPanel({
         <button
           onClick={() => setMethod("csv")}
           className={`focus-ring flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition sm:flex-none ${
-            method === "csv" ? "bg-white text-navy-950 shadow-sm" : "text-slate-500"
+            method === "csv" ? "bg-white text-ink-950 shadow-sm" : "text-slate-500"
           }`}
         >
           <FileSpreadsheet size={15} /> CSV File
@@ -111,7 +150,7 @@ export function UploadPanel({
         <button
           onClick={() => setMethod("photo")}
           className={`focus-ring flex flex-1 items-center justify-center gap-1.5 rounded-full px-4 py-2 text-sm font-semibold transition sm:flex-none ${
-            method === "photo" ? "bg-white text-navy-950 shadow-sm" : "text-slate-500"
+            method === "photo" ? "bg-white text-ink-950 shadow-sm" : "text-slate-500"
           }`}
         >
           <ImageIcon size={15} /> Photo Upload
@@ -130,8 +169,8 @@ export function UploadPanel({
             onClick={() => inputRef.current?.click()}
             className={`group cursor-pointer rounded-2xl border-2 border-dashed p-10 text-center transition sm:p-14 ${
               dragActive
-                ? "border-navy-600 bg-navy-50/60"
-                : "border-slate-300 bg-white hover:border-navy-400 hover:bg-surface-50"
+                ? "border-accent-500 bg-accent-50"
+                : "border-slate-300 bg-white hover:border-accent-400 hover:bg-surface-50"
             }`}
           >
             <input
@@ -145,10 +184,10 @@ export function UploadPanel({
                 e.target.value = "";
               }}
             />
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-navy-950 text-accent-400 transition group-hover:scale-105">
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink-950 text-accent-400 transition group-hover:scale-105">
               <UploadCloud size={26} />
             </div>
-            <p className="mt-4 text-base font-semibold text-navy-950">
+            <p className="mt-4 text-base font-semibold text-ink-950">
               Drop your CSV here, or click to browse
             </p>
             <p className="mt-1.5 text-sm text-slate-500">
@@ -160,20 +199,47 @@ export function UploadPanel({
                 e.stopPropagation();
                 handleTryDemo();
               }}
-              className="focus-ring mt-5 inline-flex items-center gap-1.5 rounded-full border border-navy-200 bg-white px-4 py-2 text-xs font-bold text-navy-700 shadow-sm transition hover:border-navy-400"
+              className="focus-ring mt-5 inline-flex items-center gap-1.5 rounded-full border border-slate-200 bg-white px-4 py-2 text-xs font-bold text-ink-700 shadow-sm transition hover:border-accent-400"
             >
               <Sparkles size={13} /> Or try instantly with sample data
             </button>
           </div>
         ) : (
-          <div className="rounded-2xl border-2 border-dashed border-slate-300 bg-white p-10 text-center sm:p-14">
-            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-surface-100 text-slate-400">
-              <ImageIcon size={26} />
+          <div
+            onDragOver={(e) => {
+              e.preventDefault();
+              setDragActive(true);
+            }}
+            onDragLeave={() => setDragActive(false)}
+            onDrop={handleDrop}
+            onClick={() => !scanning && photoInputRef.current?.click()}
+            className={`group cursor-pointer rounded-2xl border-2 border-dashed p-10 text-center transition sm:p-14 ${
+              dragActive
+                ? "border-accent-500 bg-accent-50"
+                : "border-slate-300 bg-white hover:border-accent-400 hover:bg-surface-50"
+            }`}
+          >
+            <input
+              ref={photoInputRef}
+              type="file"
+              accept="image/*"
+              className="hidden"
+              onChange={(e) => {
+                const file = e.target.files?.[0];
+                if (file) scanPhoto(file);
+                e.target.value = "";
+              }}
+            />
+            <div className="mx-auto flex h-14 w-14 items-center justify-center rounded-2xl bg-ink-950 text-accent-400 transition group-hover:scale-105">
+              {scanning ? <Loader2 size={26} className="animate-spin" /> : <ScanEye size={26} />}
             </div>
-            <p className="mt-4 text-base font-semibold text-navy-950">Photo receipt scanning</p>
+            <p className="mt-4 text-base font-semibold text-ink-950">
+              {scanning ? "Reading your receipt…" : "Drop a receipt or statement photo here"}
+            </p>
             <p className="mx-auto mt-1.5 max-w-sm text-sm text-slate-500">
-              Coming soon — OCR-based receipt scanning is in development. Use
-              CSV upload for the full analysis experience today.
+              {scanning
+                ? "This can take a few seconds."
+                : "Our AI reads the image and pulls out each transaction automatically."}
             </p>
           </div>
         )}
@@ -190,7 +256,7 @@ export function UploadPanel({
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
               <CheckCircle2 size={17} className="text-emerald-500" />
-              <span className="text-sm font-semibold text-navy-950">{fileName}</span>
+              <span className="text-sm font-semibold text-ink-950">{fileName}</span>
             </div>
             <span className="text-xs font-medium text-slate-400">{formatNumber(rows.length)} rows</span>
           </div>
@@ -231,7 +297,7 @@ export function UploadPanel({
             {analysisComplete ? (
               <div className="flex flex-col items-center gap-3 rounded-xl bg-emerald-50 px-5 py-4 text-center sm:flex-row sm:justify-between sm:text-left">
                 <span className="text-sm font-semibold text-emerald-700">
-                  Analysis complete — explore the Dashboard, Forecast, Alerts, and Assistant tabs.
+                  Analysis complete. Explore the Dashboard, Forecast, Alerts, and Assistant tabs.
                 </span>
                 <button
                   onClick={onReset}
@@ -244,7 +310,7 @@ export function UploadPanel({
               <button
                 onClick={onAnalyze}
                 disabled={analyzing}
-                className="focus-ring flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-navy-800 to-navy-600 px-6 py-4 text-base font-bold text-white shadow-card transition hover:brightness-110 disabled:opacity-70"
+                className="focus-ring flex w-full items-center justify-center gap-2 rounded-full bg-gradient-to-r from-accent-500 to-accent-600 px-6 py-4 text-base font-bold text-white shadow-card transition hover:brightness-110 disabled:opacity-70"
               >
                 {analyzing ? (
                   <>
@@ -266,7 +332,7 @@ function MiniStat({ label, value }: { label: string; value: string }) {
   return (
     <div className="card-surface rounded-xl p-4 text-center shadow-card">
       <div className="text-[0.65rem] font-bold uppercase tracking-wider text-slate-400">{label}</div>
-      <div className="mt-1.5 font-display text-lg font-extrabold tabular text-navy-950 sm:text-xl">
+      <div className="mt-1.5 font-display text-lg font-extrabold tabular text-ink-950 sm:text-xl">
         {value}
       </div>
     </div>

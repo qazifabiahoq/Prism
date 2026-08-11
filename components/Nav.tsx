@@ -15,9 +15,11 @@ const LINKS: Array<{ key: TabKey | "top"; label: string }> = [
 export function Nav({
   hasAnalysis,
   onNavigate,
+  onTryDemo,
 }: {
   hasAnalysis: boolean;
   onNavigate: (key: TabKey | "top") => void;
+  onTryDemo: () => void;
 }) {
   const [scrolled, setScrolled] = useState(false);
   const [menuOpen, setMenuOpen] = useState(false);
@@ -34,17 +36,23 @@ export function Nav({
     onNavigate(key);
   };
 
+  const handleCta = () => {
+    setMenuOpen(false);
+    if (hasAnalysis) onNavigate("upload" as TabKey);
+    else onTryDemo();
+  };
+
   return (
     <header
       className={`sticky top-0 z-50 transition-all duration-300 ${
         scrolled
-          ? "glass-dark border-b border-white/10 shadow-[0_4px_30px_rgba(0,0,0,0.25)]"
+          ? "border-b border-slate-200 bg-white/90 shadow-sm backdrop-blur-md"
           : "bg-transparent"
       }`}
     >
       <div className="container-shell flex h-16 items-center justify-between sm:h-20">
         <button onClick={() => handleNav("top")} className="focus-ring rounded-lg">
-          <Logo light />
+          <Logo />
         </button>
 
         <nav className="hidden items-center gap-1 md:flex">
@@ -52,7 +60,7 @@ export function Nav({
             <button
               key={link.key}
               onClick={() => handleNav(link.key)}
-              className="focus-ring rounded-full px-4 py-2 text-sm font-medium text-white/70 transition hover:bg-white/10 hover:text-white"
+              className="focus-ring rounded-full px-4 py-2 text-sm font-medium text-ink-600 transition hover:bg-slate-100 hover:text-ink-950"
             >
               {link.label}
             </button>
@@ -61,15 +69,15 @@ export function Nav({
 
         <div className="hidden items-center gap-3 md:flex">
           <button
-            onClick={() => handleNav("upload" as TabKey)}
-            className="focus-ring rounded-full bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-2.5 text-sm font-bold text-navy-950 shadow-glow transition hover:brightness-110 active:scale-[0.98]"
+            onClick={handleCta}
+            className="focus-ring rounded-full bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-2.5 text-sm font-bold text-white shadow-glow transition hover:brightness-110 active:scale-[0.98]"
           >
             {hasAnalysis ? "My Data" : "Try Free Demo"}
           </button>
         </div>
 
         <button
-          className="focus-ring flex h-10 w-10 items-center justify-center rounded-lg text-white md:hidden"
+          className="focus-ring flex h-10 w-10 items-center justify-center rounded-lg text-ink-950 md:hidden"
           onClick={() => setMenuOpen((v) => !v)}
           aria-label="Toggle menu"
         >
@@ -84,20 +92,20 @@ export function Nav({
       </div>
 
       {menuOpen && (
-        <div className="glass-dark border-t border-white/10 px-5 pb-6 pt-2 md:hidden">
+        <div className="border-t border-slate-200 bg-white px-5 pb-6 pt-2 md:hidden">
           <div className="flex flex-col gap-1">
             {LINKS.filter((l) => l.key === "top" || hasAnalysis).map((link) => (
               <button
                 key={link.key}
                 onClick={() => handleNav(link.key)}
-                className="focus-ring rounded-lg px-3 py-3 text-left text-base font-medium text-white/80 hover:bg-white/10 hover:text-white"
+                className="focus-ring rounded-lg px-3 py-3 text-left text-base font-medium text-ink-600 hover:bg-slate-100 hover:text-ink-950"
               >
                 {link.label}
               </button>
             ))}
             <button
-              onClick={() => handleNav("upload" as TabKey)}
-              className="focus-ring mt-2 rounded-full bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-3 text-center text-sm font-bold text-navy-950"
+              onClick={handleCta}
+              className="focus-ring mt-2 rounded-full bg-gradient-to-r from-accent-500 to-accent-600 px-5 py-3 text-center text-sm font-bold text-white"
             >
               {hasAnalysis ? "My Data" : "Try Free Demo"}
             </button>

@@ -14,10 +14,10 @@ export function StatCard({
   tone?: "neutral" | "positive" | "negative" | "accent";
 }) {
   const toneClass = {
-    neutral: "text-navy-950",
+    neutral: "text-ink-950",
     positive: "text-emerald-600",
     negative: "text-rose-600",
-    accent: "text-navy-700",
+    accent: "text-ink-700",
   }[tone];
 
   return (
@@ -27,7 +27,7 @@ export function StatCard({
           {label}
         </div>
         {Icon && (
-          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-100 text-navy-700">
+          <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-surface-100 text-ink-700">
             <Icon size={16} />
           </div>
         )}
