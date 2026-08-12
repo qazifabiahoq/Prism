@@ -1,6 +1,7 @@
 import json
 import os
 import re
+import traceback
 from http.server import BaseHTTPRequestHandler
 
 EXTRACTION_PROMPT = """You are reading a photo of a receipt, bank statement, or transaction screenshot.
@@ -123,4 +124,5 @@ class handler(BaseHTTPRequestHandler):
 
             self._send_json(200, {"ok": True, "rows": rows})
         except Exception:  # noqa: BLE001
+            print("receipt.py error:", traceback.format_exc())
             self._send_json(200, {"ok": False, "error": "Photo scanning is temporarily unavailable. Please use CSV upload."})

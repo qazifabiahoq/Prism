@@ -1,5 +1,6 @@
 import json
 import os
+import traceback
 from http.server import BaseHTTPRequestHandler
 
 
@@ -66,4 +67,5 @@ class handler(BaseHTTPRequestHandler):
             answer = completion.choices[0].message.content
             self._send_json(200, {"ok": True, "answer": answer})
         except Exception:  # noqa: BLE001
+            print("ask.py error:", traceback.format_exc())
             self._send_json(200, {"ok": False, "error": "Assistant temporarily unavailable. Please try again later."})
