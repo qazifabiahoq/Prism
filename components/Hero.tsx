@@ -1,6 +1,6 @@
 "use client";
 
-import { ArrowRight, ShieldCheck, Sparkles, TrendingUp, Zap } from "lucide-react";
+import { ArrowRight, ShieldCheck, TrendingUp, Zap } from "lucide-react";
 
 export function Hero({
   onTryDemo,
@@ -17,11 +17,6 @@ export function Hero({
 
       <div className="container-shell relative">
         <div className="mx-auto flex max-w-3xl flex-col items-center text-center">
-          <div className="animate-fade-in mb-7 inline-flex items-center gap-2 rounded-full border border-slate-200 bg-accent-50 px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-accent-600">
-            <Sparkles size={13} />
-            Real ML. Real predictions. Zero fluff.
-          </div>
-
           <h1 className="animate-fade-up font-display text-[2.6rem] font-extrabold leading-[1.06] tracking-tight text-ink-950 sm:text-6xl lg:text-[4.2rem]">
             Your finances,
             <br />
@@ -32,9 +27,9 @@ export function Hero({
             className="animate-fade-up mt-6 max-w-xl text-balance text-base leading-relaxed text-slate-600 sm:text-lg"
             style={{ animationDelay: "0.1s" }}
           >
-            Upload transactions and get institutional-grade forecasting, fraud
-            detection, and an AI advisor trained on your own spending. Results
-            in under 60 seconds, completely private.
+            Upload a transaction file and see your spending forecast, fraud
+            alerts, and an AI advisor trained on your own data — in under 30
+            seconds, without linking your bank.
           </p>
 
           <div

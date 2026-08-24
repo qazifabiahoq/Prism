@@ -56,7 +56,7 @@ export function Nav({
         </button>
 
         <nav className="hidden items-center gap-1 md:flex">
-          {LINKS.filter((l) => l.key === "top" || hasAnalysis).map((link) => (
+          {LINKS.filter((l) => l.key !== "top" && hasAnalysis).map((link) => (
             <button
               key={link.key}
               onClick={() => handleNav(link.key)}
@@ -94,7 +94,7 @@ export function Nav({
       {menuOpen && (
         <div className="border-t border-slate-200 bg-white px-5 pb-6 pt-2 md:hidden">
           <div className="flex flex-col gap-1">
-            {LINKS.filter((l) => l.key === "top" || hasAnalysis).map((link) => (
+            {LINKS.filter((l) => l.key !== "top" && hasAnalysis).map((link) => (
               <button
                 key={link.key}
                 onClick={() => handleNav(link.key)}
